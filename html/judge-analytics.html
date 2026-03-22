@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NYAY PRAVAH | Judge Analytics</title>
+    <link rel="stylesheet" href="../styles/style.css">
+    <link rel="stylesheet" href="../styles/layout.css">
+    <link rel="stylesheet" href="../styles/components.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+
+<body data-judge-page="analytics">
+
+    <div class="sidebar-hover-zone" aria-hidden="true"></div>
+
+    <aside class="sidebar">
+        <div class="sidebar-logo">
+            <img src="../asset/logo/mainlogo.jpeg" alt="Nav Pravah Logo" class="sidebar-logo-img">
+            <span class="sidebar-logo-text">NYAY PRAVAH</span>
+        </div>
+        <nav class="menu">
+            <a href="judge-dashboard.html"><i class="fas fa-columns"></i> Dashboard</a>
+            <a href="judge-all-cases.html"><i class="fas fa-folder-open"></i> All Cases</a>
+            <a href="judge-pending-cases.html"><i class="fas fa-clock"></i> Pending Cases</a>
+            <a href="judge-analytics.html" class="active"><i class="fas fa-chart-line"></i> Analytics</a>
+            <div class="divider"></div>
+            <a href="#" id="logoutBtn"><i class="fas fa-sign-out-alt"></i> Logout</a>
+        </nav>
+        <div class="user-profile">
+            <div class="avatar">HH</div>
+            <div class="info">
+                <strong>Hon. Judge</strong>
+                <span>Courtroom 04</span>
+            </div>
+        </div>
+    </aside>
+
+    <main class="main-content">
+        <header class="top-bar">
+            <div class="search-box">
+                <i class="fas fa-search"></i>
+                <input id="caseSearchInput" type="text" placeholder="Search by Case ID...">
+            </div>
+            <div class="header-actions">
+                <div class="live-status"><span class="pulse"></span> Dashboard Analytics</div>
+                <button class="refresh-btn" onclick="window.location.href='judge-dashboard.html'">
+                    <i class="fas fa-arrow-left"></i> Back To Dashboard
+                </button>
+                <button class="refresh-btn" onclick="window.location.reload()">
+                    <i class="fas fa-sync-alt"></i> Refresh
+                </button>
+            </div>
+        </header>
+
+        <section class="dashboard-header">
+            <h2>Brief Case Analytics (Judge Dashboard)</h2>
+            <p>Live summary generated from the same local case state used by the judge dashboard.</p>
+        </section>
+
+        <section class="reports-wrapper">
+            <article class="report-section">
+                <h3>Case Summary</h3>
+                <div class="analytics-grid">
+                    <div class="analytics-card">
+                        <div class="analytics-label">Total Cases</div>
+                        <div id="analyticsTotalCases" class="analytics-value">0</div>
+                    </div>
+                    <div class="analytics-card">
+                        <div class="analytics-label">Active On Dashboard</div>
+                        <div id="analyticsActiveDashboard" class="analytics-value">0</div>
+                    </div>
+                    <div class="analytics-card">
+                        <div class="analytics-label">Pending</div>
+                        <div id="analyticsPending" class="analytics-value">0</div>
+                    </div>
+                    <div class="analytics-card">
+                        <div class="analytics-label">Stay</div>
+                        <div id="analyticsStay" class="analytics-value">0</div>
+                    </div>
+                    <div class="analytics-card">
+                        <div class="analytics-label">Re-hearing</div>
+                        <div id="analyticsRehearing" class="analytics-value">0</div>
+                    </div>
+                    <div class="analytics-card">
+                        <div class="analytics-label">Adjoined</div>
+                        <div id="analyticsAdjoined" class="analytics-value">0</div>
+                    </div>
+                    <div class="analytics-card">
+                        <div class="analytics-label">Pending Not On Dashboard</div>
+                        <div id="analyticsLoadable" class="analytics-value">0</div>
+                    </div>
+                </div>
+            </article>
+
+            <article class="report-section">
+                <h3>Search Result</h3>
+                <div id="analyticsSearchList" class="report-list"></div>
+            </article>
+        </section>
+
+        <footer class="np-footer">
+            <div class="footer-primary-links">
+                <div class="footer-grid">
+
+                    <div class="footer-col">
+                        <ul>
+                            <li><a href="footer/ai-case-search.html" target="_blank" rel="noopener noreferrer">AI Case
+                                    Search</a></li>
+                            <li><a href="footer/faq-user-guides.html" target="_blank" rel="noopener noreferrer">FAQ /
+                                    User Guides</a></li>
+                            <li><a href="footer/service-status.html" target="_blank" rel="noopener noreferrer">Service
+                                    Status</a></li>
+                            <li><a href="footer/developer-api.html" target="_blank" rel="noopener noreferrer">Developer
+                                    API</a></li>
+                        </ul>
+                    </div>
+
+                    <div class="footer-col">
+                        <ul>
+                            <li><a href="footer/privacy-policy.html" target="_blank" rel="noopener noreferrer">Privacy
+                                    Policy</a></li>
+                            <li><a href="footer/data-handling-protocol.html" target="_blank"
+                                    rel="noopener noreferrer">Data Handling Protocol</a></li>
+                            <li><a href="footer/feedback-portal.html" target="_blank" rel="noopener noreferrer">Feedback
+                                    Portal</a></li>
+                            <li><a href="footer/accessibility.html" target="_blank"
+                                    rel="noopener noreferrer">Accessibility</a></li>
+                        </ul>
+                    </div>
+
+                    <div class="footer-col">
+                        <ul>
+                            <li><a href="footer/about-nav-pravah.html" target="_blank" rel="noopener noreferrer">About
+                                    Nav Pravah</a></li>
+                            <li><a href="footer/team-code-dazzlers.html" target="_blank" rel="noopener noreferrer">The
+                                    Team (Code Dazzlers)</a></li>
+                            <li><a href="footer/technology-stack.html" target="_blank"
+                                    rel="noopener noreferrer">Technology Stack</a></li>
+                            <li><a href="footer/mherm-hackathon-26.html" target="_blank" rel="noopener noreferrer">MHERM
+                                    Hackathon '26</a></li>
+                        </ul>
+                    </div>
+
+                    <div class="footer-col footer-app-download">
+                        <div class="app-card">
+                            <img src="../asset/logo/mainlogo.jpeg" alt="Nav Pravah Logo" class="footer-logo">
+                            <p>NAV PRAVAH</p>
+                            <span class="tagline">Justice. Accelerated.</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="footer-secondary-info">
+                <div class="policy-links">
+                    <a href="footer/website-policies.html" target="_blank" rel="noopener noreferrer">Website
+                        Policies</a> |
+                    <a href="footer/contact-us.html" target="_blank" rel="noopener noreferrer">Contact Us</a> |
+                    <a href="footer/help.html" target="_blank" rel="noopener noreferrer">Help</a> |
+                    <a href="footer/disclaimer.html" target="_blank" rel="noopener noreferrer">Disclaimer</a>
+                </div>
+
+                <div class="copyright-text">
+                    <p>Content Managed & Maintained by **Code Dazzlers**.</p>
+                    <p>Built for the **MHERM Hackathon 2026**.</p>
+                    <p>Last Data Update: March 19, 2026</p>
+                </div>
+
+                <div class="partner-logos">
+                    <span class="mherm-badge">MHERM '26</span>
+                </div>
+            </div>
+        </footer>
+    </main>
+
+    <script src="../scripts/dashboard.js"></script>
+    <script src="../scripts/judge-reports.js"></script>
+    <script>
+        const logoutBtn = document.getElementById('logoutBtn');
+        if (logoutBtn) {
+            logoutBtn.addEventListener('click', (event) => {
+                event.preventDefault();
+                const shouldLogout = confirm('Do you want to logout?');
+                if (shouldLogout) {
+                    window.location.href = 'index.html';
+                }
+            });
+        }
+    </script>
+</body>
+
+</html>

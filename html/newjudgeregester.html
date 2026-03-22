@@ -1,0 +1,224 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Judge Verification - Nav Pravah</title>
+    <link rel="stylesheet" href="../styles/login.css">
+</head>
+
+<body>
+    <main>
+        <div class="tagsection">
+            <div id="tag">
+                <p>NAV PRAVHA</p>
+            </div>
+            <div id="tagline">
+                <p>&#2344;&#2381;&#2351;&#2366;&#2351; &#2325;&#2366; &#2346;&#2381;&#2352;&#2357;&#2366;&#2361;</p>
+            </div>
+        </div>
+
+        <section class="auth-shell">
+            <div class="auth-card register-card">
+                <h1 class="auth-title">Judge New User Verification</h1>
+                <p class="auth-subtitle">Complete your profile to continue with license verification.</p>
+
+                <form id="registrationForm" class="verification-form" data-role="judge">
+                    <label class="auth-label" for="judge-full-name">Name </label>
+                    <input class="auth-input" id="judge-full-name" name="fullName" type="text" required>
+
+                    <label class="auth-label" for="judge-email">Gmail</label>
+                    <input class="auth-input" id="judge-email" name="email" type="email" placeholder="name@gmail.com"
+                        required>
+
+                    <label class="auth-label" for="judge-password">Password</label>
+                    <input class="auth-input" id="judge-password" name="password" type="password" required>
+
+                    <label class="auth-label" for="judge-confirm-password">Confirm Password</label>
+                    <input class="auth-input" id="judge-confirm-password" name="confirmPassword" type="password"
+                        required>
+
+                    <label class="auth-label" for="judge-license-no">Enter Your Licence No</label>
+                    <input class="auth-input" id="judge-license-no" name="licenseNo" type="text" required>
+
+                    <button id="verifyBtn" class="auth-submit judge-theme verify-license-btn" type="submit">Verify Your
+                        Licence To
+                        Continue</button>
+
+                    <div class="flow-actions">
+                        <button id="backHome" class="secondary-btn back-home-btn" type="button">Back To Home</button>
+                        <button id="backPrev" class="secondary-btn back-previous-btn" type="button">Back To
+                            Previous</button>
+                    </div>
+                </form>
+            </div>
+        </section>
+
+        <footer class="np-footer">
+            <div class="footer-primary-links">
+                <div class="footer-grid">
+
+                    <div class="footer-col">
+                        <ul>
+                            <li><a href="footer/ai-case-search.html" target="_blank" rel="noopener noreferrer">AI Case
+                                    Search</a></li>
+                            <li><a href="footer/faq-user-guides.html" target="_blank" rel="noopener noreferrer">FAQ /
+                                    User Guides</a></li>
+                            <li><a href="footer/service-status.html" target="_blank" rel="noopener noreferrer">Service
+                                    Status</a></li>
+                            <li><a href="footer/developer-api.html" target="_blank" rel="noopener noreferrer">Developer
+                                    API</a></li>
+                        </ul>
+                    </div>
+
+                    <div class="footer-col">
+                        <ul>
+                            <li><a href="footer/privacy-policy.html" target="_blank" rel="noopener noreferrer">Privacy
+                                    Policy</a></li>
+                            <li><a href="footer/data-handling-protocol.html" target="_blank"
+                                    rel="noopener noreferrer">Data Handling Protocol</a></li>
+                            <li><a href="footer/feedback-portal.html" target="_blank" rel="noopener noreferrer">Feedback
+                                    Portal</a></li>
+                            <li><a href="footer/accessibility.html" target="_blank"
+                                    rel="noopener noreferrer">Accessibility</a></li>
+                        </ul>
+                    </div>
+
+                    <div class="footer-col">
+                        <ul>
+                            <li><a href="footer/about-nav-pravah.html" target="_blank" rel="noopener noreferrer">About
+                                    Nav Pravah</a></li>
+                            <li><a href="footer/team-code-dazzlers.html" target="_blank" rel="noopener noreferrer">The
+                                    Team (Code Dazzlers)</a></li>
+                            <li><a href="footer/technology-stack.html" target="_blank"
+                                    rel="noopener noreferrer">Technology Stack</a></li>
+                            <li><a href="footer/mherm-hackathon-26.html" target="_blank" rel="noopener noreferrer">MHERM
+                                    Hackathon '26</a></li>
+                        </ul>
+                    </div>
+
+                    <div class="footer-col footer-app-download">
+                        <div class="app-card">
+                            <img src="../asset/logo/mainlogo.jpeg" alt="Nav Pravah Logo" class="footer-logo">
+                            <p>NAV PRAVAH</p>
+                            <span class="tagline">Justice. Accelerated.</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="footer-secondary-info">
+                <div class="policy-links">
+                    <a href="footer/website-policies.html" target="_blank" rel="noopener noreferrer">Website
+                        Policies</a> |
+                    <a href="footer/contact-us.html" target="_blank" rel="noopener noreferrer">Contact Us</a> |
+                    <a href="footer/help.html" target="_blank" rel="noopener noreferrer">Help</a> |
+                    <a href="footer/disclaimer.html" target="_blank" rel="noopener noreferrer">Disclaimer</a>
+                </div>
+
+                <div class="copyright-text">
+                    <p>Content Managed & Maintained by **Code Dazzlers**.</p>
+                    <p>Built for the **MHERM Hackathon 2026**.</p>
+                    <p>Last Data Update: March 19, 2026</p>
+                </div>
+
+                <div class="partner-logos">
+                    <span class="mherm-badge">MHERM '26</span>
+                </div>
+            </div>
+        </footer>
+    </main>
+    <script>
+        const JUDGE_USERS_KEY = 'nyay_pravah_judge_users_v1';
+        const registrationForm = document.getElementById('registrationForm');
+        const verifyBtn = document.getElementById('verifyBtn');
+
+        function getJudgeUsers() {
+            try {
+                const value = localStorage.getItem(JUDGE_USERS_KEY);
+                return value ? JSON.parse(value) : [];
+            } catch (error) {
+                console.warn('Could not parse stored judge users. Resetting.', error);
+                return [];
+            }
+        }
+
+        function saveJudgeUsers(users) {
+            localStorage.setItem(JUDGE_USERS_KEY, JSON.stringify(users));
+        }
+
+        registrationForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const fullName = document.getElementById('judge-full-name').value.trim();
+            const email = document.getElementById('judge-email').value.trim().toLowerCase();
+            const password = document.getElementById('judge-password').value;
+            const confirmPassword = document.getElementById('judge-confirm-password').value;
+            const licenseNo = document.getElementById('judge-license-no').value.trim();
+
+            if (!fullName || !email || !password || !licenseNo) {
+                alert('Please fill all required fields.');
+                return;
+            }
+
+            if (password !== confirmPassword) {
+                alert('Password and confirm password do not match.');
+                return;
+            }
+
+            verifyBtn.innerText = 'Saving Profile...';
+            verifyBtn.disabled = true;
+
+            try {
+                const users = getJudgeUsers();
+                const alreadyExists = users.some((user) => user.email === email);
+                if (alreadyExists) {
+                    alert('This email is already registered. Please login instead.');
+                    return;
+                }
+
+                users.push({
+                    role: 'judge',
+                    fullName,
+                    email,
+                    password,
+                    licenseNo,
+                    createdAt: new Date().toISOString()
+                });
+
+                saveJudgeUsers(users);
+                sessionStorage.setItem('nyay_pravah_active_user', JSON.stringify({ role: 'judge', email, fullName }));
+
+                alert('Profile saved successfully. Proceeding to verification upload.');
+                window.location.href = 'judgeverification.html';
+            } catch (err) {
+                alert('Unable to save profile: ' + err.message);
+                console.error(err);
+            } finally {
+                verifyBtn.innerText = 'Verify Your Licence To Continue';
+                verifyBtn.disabled = false;
+            }
+        });
+
+        const backHomeBtn = document.getElementById('backHome');
+        if (backHomeBtn) {
+            backHomeBtn.addEventListener('click', () => {
+                window.location.href = 'index.html';
+            });
+        }
+
+        const backPrevBtn = document.getElementById('backPrev');
+        if (backPrevBtn) {
+            backPrevBtn.addEventListener('click', () => {
+                if (window.history.length > 1) {
+                    window.history.back();
+                    return;
+                }
+                window.location.href = 'judgelogin.html';
+            });
+        }
+    </script>
+</body>
+
+</html>
