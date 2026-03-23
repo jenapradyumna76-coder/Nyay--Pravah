@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nav Pravah - Details</title>
+    <title>NYAY Pravah - Details</title>
     <style>
         * {
             box-sizing: border-box;
@@ -92,7 +92,7 @@
 <body>
     <main class="details-wrap">
         <article class="details-card">
-            <span class="tag">NAV PRAVAH DETAILS</span>
+            <span class="tag">NYAY PRAVAH DETAILS</span>
             <h1 id="topic-title">Footer Detail</h1>
             <p id="topic-intro">Placeholder content for the selected topic.</p>
 
@@ -192,9 +192,9 @@
                     "Ongoing accessibility reviews for continuous improvement."
                 ]
             },
-            "about-nav-pravah": {
-                title: "About Nav Pravah",
-                intro: "Nav Pravah is built to simplify legal processes through digital-first workflows.",
+            "about-nyay-pravah": {
+                title: "About NYAY Pravah",
+                intro: "NYAY Pravah is built to simplify legal processes through digital-first workflows.",
                 overview: "The platform combines search, guidance, and collaboration tools to support citizens, lawyers, and judges with practical legal-tech solutions.",
                 points: [
                     "Focused on reducing complexity in legal navigation.",
@@ -204,7 +204,7 @@
             },
             "team-code-dazzlers": {
                 title: "The Team (Code Dazzlers)",
-                intro: "Meet the contributors behind the Nav Pravah vision.",
+                intro: "Meet the contributors behind the NYAY Pravah vision.",
                 overview: "Code Dazzlers is a collaborative team working across product strategy, design, and engineering to deliver meaningful legal-tech outcomes.",
                 points: [
                     "Cross-functional collaboration model.",
@@ -275,8 +275,8 @@
         };
 
         const params = new URLSearchParams(window.location.search);
-        const topic = params.get("topic") || "about-nav-pravah";
-        const content = contentMap[topic] || contentMap["about-nav-pravah"];
+        const topic = params.get("topic") || "about-nyay-pravah";
+        const content = contentMap[topic] || contentMap["about-nyay-pravah"];
 
         document.getElementById("topic-title").textContent = content.title;
         document.getElementById("topic-intro").textContent = content.intro;
