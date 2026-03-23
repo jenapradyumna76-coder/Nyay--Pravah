@@ -35,6 +35,16 @@ function renderLawyerPendingCases(state, query) {
     renderLawyerCaseCards(lawyerWithSearch(pendingOutsideDashboard, query), 'lawyerPendingOutsideList');
 }
 
+function renderLawyerMissingCases(state, query) {
+    const missingCases = state.cases.filter((caseData) => caseData.status === 'pending' && caseData.sl % 3 === 0);
+    renderLawyerCaseCards(lawyerWithSearch(missingCases, query), 'lawyerMissingDetailsList');
+}
+
+function renderLawyerAdjoinmentCases(state, query) {
+    const buckets = window.JudgeCaseStore.getCaseBuckets(state);
+    renderLawyerCaseCards(lawyerWithSearch(buckets.adjoined, query), 'lawyerAdjoinmentList');
+}
+
 function renderLawyerAnalytics(state, query) {
     const stats = window.JudgeCaseStore.getAnalytics(state);
     const map = {
@@ -76,6 +86,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (page === 'pending') {
             renderLawyerPendingCases(state, query);
+            return;
+        }
+
+        if (page === 'missing') {
+            renderLawyerMissingCases(state, query);
+            return;
+        }
+
+        if (page === 'adjoinment') {
+            renderLawyerAdjoinmentCases(state, query);
             return;
         }
 

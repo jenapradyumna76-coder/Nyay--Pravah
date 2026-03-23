@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NYAY PRAVAH | Judge Today Cases</title>
+    <link rel="stylesheet" href="../styles/style.css">
+    <link rel="stylesheet" href="../styles/layout.css">
+    <link rel="stylesheet" href="../styles/components.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+
+<body data-judge-page="today">
+
+    <div class="sidebar-hover-zone" aria-hidden="true"></div>
+
+    <aside class="sidebar">
+        <div class="sidebar-logo">
+            <img src="../asset/logo/mainlogo.jpeg" alt="Nav Pravah Logo" class="sidebar-logo-img">
+            <span class="sidebar-logo-text">NYAY PRAVAH</span>
+        </div>
+        <nav class="menu">
+            <a href="judge-dashboard.html"><i class="fas fa-columns"></i> Dashboard</a>
+            <a href="judge-manual-requests.html"><i class="fas fa-user-check"></i> Manual Requests</a>
+            <a href="judge-today-cases.html" class="active"><i class="fas fa-calendar-day"></i> Today Cases</a>
+            <a href="judge-all-cases.html"><i class="fas fa-folder-open"></i> All Cases</a>
+            <a href="judge-pending-cases.html"><i class="fas fa-clock"></i> Pending Cases</a>
+            <a href="judge-adjoined-cases.html"><i class="fas fa-check-circle"></i> Adjoined Cases</a>
+            <a href="judge-analytics.html"><i class="fas fa-chart-line"></i> Analytics</a>
+            <a href="judge-profile.html"><i class="fas fa-user-circle"></i> Profile</a>
+            <div class="divider"></div>
+            <a href="#" id="logoutBtn"><i class="fas fa-sign-out-alt"></i> Logout</a>
+        </nav>
+        <div class="user-profile">
+            <div class="avatar">HH</div>
+            <div class="info">
+                <strong>Hon. Judge</strong>
+                <span>Courtroom 04</span>
+            </div>
+        </div>
+    </aside>
+
+    <main class="main-content">
+        <header class="top-bar">
+            <div class="search-box">
+                <i class="fas fa-search"></i>
+                <input id="caseSearchInput" type="text" placeholder="Search by Case ID...">
+            </div>
+            <div class="header-actions">
+                <div class="live-status"><span class="pulse"></span> Today's Docket</div>
+                <button class="refresh-btn" onclick="window.location.href='judge-dashboard.html'">
+                    <i class="fas fa-arrow-left"></i> Back To Dashboard
+                </button>
+            </div>
+        </header>
+
+        <section class="dashboard-header">
+            <h2>Today Cases</h2>
+            <p>Active pending matters currently visible on your dashboard.</p>
+        </section>
+
+        <section class="reports-wrapper">
+            <article class="report-section">
+                <h3>Today's Active Cases</h3>
+                <div id="todayCasesList" class="report-list"></div>
+            </article>
+        </section>
+    </main>
+
+    <script src="../scripts/dashboard.js"></script>
+    <script src="../scripts/judge-reports.js"></script>
+    <script>
+        const logoutBtn = document.getElementById('logoutBtn');
+        if (logoutBtn) {
+            logoutBtn.addEventListener('click', (event) => {
+                event.preventDefault();
+                const shouldLogout = confirm('Do you want to logout?');
+                if (shouldLogout) {
+                    window.location.href = 'index.html';
+                }
+            });
+        }
+    </script>
+</body>
+
+</html>

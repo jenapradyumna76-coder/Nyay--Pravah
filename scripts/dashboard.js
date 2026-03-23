@@ -151,6 +151,41 @@ function getAnalytics(state) {
     };
 }
 
+function addManualCase(manualCase) {
+    const state = loadState();
+    const maxSl = state.cases.reduce((maxValue, caseData) => Math.max(maxValue, Number(caseData.sl) || 0), 0);
+    const nextSl = maxSl + 1;
+
+    const requestedId = (manualCase && manualCase.caseId ? String(manualCase.caseId) : '').trim();
+    let nextId = requestedId || `MR-${pad(nextSl)}`;
+
+    if (state.cases.some((caseData) => caseData.id === nextId)) {
+        let suffix = 1;
+        while (state.cases.some((caseData) => caseData.id === `${nextId}-M${suffix}`)) {
+            suffix += 1;
+        }
+        nextId = `${nextId}-M${suffix}`;
+    }
+
+    const createdCase = {
+        sl: nextSl,
+        id: nextId,
+        name: manualCase.caseTitle || `Manual Review Case ${nextSl}`,
+        description: manualCase.caseDescription || manualCase.caseSummary || 'Manual review case accepted by judge.',
+        bucket: 'fresh',
+        status: 'pending',
+        actionDate: ''
+    };
+
+    state.cases.push(createdCase);
+    if (!state.activeCaseIds.includes(createdCase.id)) {
+        state.activeCaseIds.push(createdCase.id);
+    }
+    saveState(state);
+
+    return createdCase;
+}
+
 function showActionMessage(message) {
     const toast = document.getElementById('toast');
     if (!toast) {
@@ -373,5 +408,6 @@ window.JudgeCaseStore = {
     getActiveCases,
     getCaseBuckets,
     getPendingOutsideDashboard,
-    getAnalytics
+    getAnalytics,
+    addManualCase
 };

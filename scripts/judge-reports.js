@@ -35,6 +35,16 @@ function renderPendingCases(state, query) {
     renderCaseCards(withSearch(pendingOutsideDashboard, query), 'pendingOutsideList');
 }
 
+function renderTodayCases(state, query) {
+    const activeCases = window.JudgeCaseStore.getActiveCases(state);
+    renderCaseCards(withSearch(activeCases, query), 'todayCasesList');
+}
+
+function renderAdjoinedCases(state, query) {
+    const buckets = window.JudgeCaseStore.getCaseBuckets(state);
+    renderCaseCards(withSearch(buckets.adjoined, query), 'adjoinedCasesList');
+}
+
 function renderAnalytics(state, query) {
     const stats = window.JudgeCaseStore.getAnalytics(state);
     const map = {
@@ -82,6 +92,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (page === 'pending') {
             renderPendingCases(state, query);
+            return;
+        }
+
+        if (page === 'today') {
+            renderTodayCases(state, query);
+            return;
+        }
+
+        if (page === 'adjoined') {
+            renderAdjoinedCases(state, query);
             return;
         }
 

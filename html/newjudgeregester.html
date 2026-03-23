@@ -42,6 +42,14 @@
                     <label class="auth-label" for="judge-license-no">Enter Your Licence No</label>
                     <input class="auth-input" id="judge-license-no" name="licenseNo" type="text" required>
 
+                    <label class="auth-label" for="judge-contact-no">Contact Number</label>
+                    <input class="auth-input" id="judge-contact-no" name="contactNo" type="tel"
+                        placeholder="10-digit mobile number" required>
+
+                    <label class="auth-label" for="judge-photo">Profile Photo</label>
+                    <input class="auth-input file-input" id="judge-photo" name="profilePhoto" type="file"
+                        accept="image/*" required>
+
                     <button id="verifyBtn" class="auth-submit judge-theme verify-license-btn" type="submit">Verify Your
                         Licence To
                         Continue</button>
@@ -148,6 +156,15 @@
             localStorage.setItem(JUDGE_USERS_KEY, JSON.stringify(users));
         }
 
+        function readFileAsDataUrl(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = () => resolve(reader.result);
+                reader.onerror = () => reject(new Error('Could not read profile photo.'));
+                reader.readAsDataURL(file);
+            });
+        }
+
         registrationForm.addEventListener('submit', async (e) => {
             e.preventDefault();
 
@@ -156,8 +173,11 @@
             const password = document.getElementById('judge-password').value;
             const confirmPassword = document.getElementById('judge-confirm-password').value;
             const licenseNo = document.getElementById('judge-license-no').value.trim();
+            const contactNo = document.getElementById('judge-contact-no').value.trim();
+            const photoInput = document.getElementById('judge-photo');
+            const photoFile = photoInput && photoInput.files ? photoInput.files[0] : null;
 
-            if (!fullName || !email || !password || !licenseNo) {
+            if (!fullName || !email || !password || !licenseNo || !contactNo || !photoFile) {
                 alert('Please fill all required fields.');
                 return;
             }
@@ -178,12 +198,17 @@
                     return;
                 }
 
+                const profilePhoto = await readFileAsDataUrl(photoFile);
+
                 users.push({
                     role: 'judge',
                     fullName,
                     email,
                     password,
                     licenseNo,
+                    contactNo,
+                    profilePhoto,
+                    description: '',
                     createdAt: new Date().toISOString()
                 });
 

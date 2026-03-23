@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NYAY PRAVAH | Judge Profile</title>
+    <link rel="stylesheet" href="../styles/style.css">
+    <link rel="stylesheet" href="../styles/layout.css">
+    <link rel="stylesheet" href="../styles/components.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .profile-layout {
+            display: grid;
+            gap: 1rem;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+        }
+
+        .profile-photo {
+            width: 11rem;
+            height: 11rem;
+            border-radius: 12px;
+            object-fit: cover;
+            border: 1px solid rgba(33, 96, 172, 0.3);
+            margin-bottom: 0.8rem;
+        }
+
+        .profile-label {
+            font-weight: 700;
+            color: #10315c;
+            margin-right: 0.4rem;
+        }
+
+        .profile-desc-input {
+            width: 100%;
+            min-height: 7rem;
+            border: 1px solid rgba(33, 96, 172, 0.3);
+            border-radius: 10px;
+            padding: 0.65rem;
+            resize: vertical;
+            font-family: inherit;
+        }
+
+        .profile-save-message {
+            margin-top: 0.6rem;
+            color: #1a4a82;
+            font-weight: 600;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="sidebar-hover-zone" aria-hidden="true"></div>
+
+    <aside class="sidebar">
+        <div class="sidebar-logo">
+            <img src="../asset/logo/mainlogo.jpeg" alt="Nav Pravah Logo" class="sidebar-logo-img">
+            <span class="sidebar-logo-text">NYAY PRAVAH</span>
+        </div>
+        <nav class="menu">
+            <a href="judge-dashboard.html"><i class="fas fa-columns"></i> Dashboard</a>
+            <a href="judge-manual-requests.html"><i class="fas fa-user-check"></i> Manual Requests</a>
+            <a href="judge-today-cases.html"><i class="fas fa-calendar-day"></i> Today Cases</a>
+            <a href="judge-all-cases.html"><i class="fas fa-folder-open"></i> All Cases</a>
+            <a href="judge-pending-cases.html"><i class="fas fa-clock"></i> Pending Cases</a>
+            <a href="judge-adjoined-cases.html"><i class="fas fa-check-circle"></i> Adjoined Cases</a>
+            <a href="judge-analytics.html"><i class="fas fa-chart-line"></i> Analytics</a>
+            <a href="judge-profile.html" class="active"><i class="fas fa-user-circle"></i> Profile</a>
+            <div class="divider"></div>
+            <a href="#" id="logoutBtn"><i class="fas fa-sign-out-alt"></i> Logout</a>
+        </nav>
+        <div class="user-profile">
+            <div class="avatar">HH</div>
+            <div class="info">
+                <strong>Hon. Judge</strong>
+                <span>Courtroom 04</span>
+            </div>
+        </div>
+    </aside>
+
+    <main class="main-content">
+        <header class="top-bar">
+            <div class="search-box">
+                <i class="fas fa-id-badge"></i>
+                <input type="text" value="Judge Profile" readonly>
+            </div>
+            <div class="header-actions">
+                <button class="refresh-btn" onclick="window.location.href='judge-dashboard.html'">
+                    <i class="fas fa-arrow-left"></i> Back To Dashboard
+                </button>
+            </div>
+        </header>
+
+        <section class="reports-wrapper">
+            <article class="report-section">
+                <h3>Profile Details</h3>
+                <div class="profile-layout">
+                    <div class="report-card">
+                        <img id="profile-photo" class="profile-photo" src="../asset/logo/mainlogo.jpeg"
+                            alt="Judge Photo">
+                        <div class="report-card-title" id="profile-name">Hon. Judge</div>
+                        <div class="report-card-meta"><span class="profile-label">Role:</span><span
+                                id="profile-role">Presiding Judge</span></div>
+                        <div class="report-card-meta"><span class="profile-label">Email:</span><span
+                                id="profile-email">-</span></div>
+                        <div class="report-card-meta"><span class="profile-label">Contact:</span><span
+                                id="profile-contact">-</span></div>
+                    </div>
+
+                    <div class="report-card">
+                        <div class="report-card-title">Description (Optional)</div>
+                        <div class="report-card-meta" id="profile-description-text">No description added yet.</div>
+                        <label class="auth-label" for="profile-description-input">Update Description</label>
+                        <textarea id="profile-description-input" class="profile-desc-input"
+                            placeholder="Add profile description (optional)"></textarea>
+                        <button id="save-description-btn" class="auth-submit judge-theme" type="button">Save
+                            Description</button>
+                        <div id="profile-save-message" class="profile-save-message"></div>
+                    </div>
+                </div>
+            </article>
+        </section>
+    </main>
+
+    <script src="../scripts/profile.js"></script>
+
+    <script>
+        const logoutBtn = document.getElementById('logoutBtn');
+        if (logoutBtn) {
+            logoutBtn.addEventListener('click', (event) => {
+                event.preventDefault();
+                const shouldLogout = confirm('Do you want to logout?');
+                if (shouldLogout) {
+                    window.location.href = 'index.html';
+                }
+            });
+        }
+    </script>
+</body>
+
+</html>

@@ -24,7 +24,7 @@
                 <h1 class="auth-title">Lawyer New User Verification</h1>
                 <p class="auth-subtitle">Complete your profile to continue with license verification.</p>
 
-                <form class="verification-form" data-role="lawyer">
+                <form id="registrationForm" class="verification-form" data-role="lawyer">
                     <label class="auth-label" for="lawyer-full-name">Name as per Aadhar / Govt Proof</label>
                     <input class="auth-input" id="lawyer-full-name" name="fullName" type="text" required>
 
@@ -42,7 +42,16 @@
                     <label class="auth-label" for="lawyer-license-no">Enter Your Licence No</label>
                     <input class="auth-input" id="lawyer-license-no" name="licenseNo" type="text" required>
 
-                    <button class="auth-submit lawyer-theme verify-license-btn" type="button">Verify Your Licence To
+                    <label class="auth-label" for="lawyer-contact-no">Contact Number</label>
+                    <input class="auth-input" id="lawyer-contact-no" name="contactNo" type="tel"
+                        placeholder="10-digit mobile number" required>
+
+                    <label class="auth-label" for="lawyer-photo">Profile Photo</label>
+                    <input class="auth-input file-input" id="lawyer-photo" name="profilePhoto" type="file"
+                        accept="image/*" required>
+
+                    <button id="verifyBtn" class="auth-submit lawyer-theme verify-license-btn" type="submit">Verify Your
+                        Licence To
                         Continue</button>
 
                     <div class="flow-actions">
@@ -128,7 +137,113 @@
         </footer>
     </main>
 
-    <script src="../scripts/auth.js"></script>
+    <script>
+        const LAWYER_USERS_KEY = 'nyay_pravah_lawyer_users_v1';
+        const registrationForm = document.getElementById('registrationForm');
+        const verifyBtn = document.getElementById('verifyBtn');
+
+        function getLawyerUsers() {
+            try {
+                const value = localStorage.getItem(LAWYER_USERS_KEY);
+                return value ? JSON.parse(value) : [];
+            } catch (error) {
+                console.warn('Could not parse stored lawyer users. Resetting.', error);
+                return [];
+            }
+        }
+
+        function saveLawyerUsers(users) {
+            localStorage.setItem(LAWYER_USERS_KEY, JSON.stringify(users));
+        }
+
+        function readFileAsDataUrl(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = () => resolve(reader.result);
+                reader.onerror = () => reject(new Error('Could not read profile photo.'));
+                reader.readAsDataURL(file);
+            });
+        }
+
+        registrationForm.addEventListener('submit', async (event) => {
+            event.preventDefault();
+
+            const fullName = document.getElementById('lawyer-full-name').value.trim();
+            const email = document.getElementById('lawyer-email').value.trim().toLowerCase();
+            const password = document.getElementById('lawyer-password').value;
+            const confirmPassword = document.getElementById('lawyer-confirm-password').value;
+            const licenseNo = document.getElementById('lawyer-license-no').value.trim();
+            const contactNo = document.getElementById('lawyer-contact-no').value.trim();
+            const photoInput = document.getElementById('lawyer-photo');
+            const photoFile = photoInput && photoInput.files ? photoInput.files[0] : null;
+
+            if (!fullName || !email || !password || !licenseNo || !contactNo || !photoFile) {
+                alert('Please fill all required fields.');
+                return;
+            }
+
+            if (password !== confirmPassword) {
+                alert('Password and confirm password do not match.');
+                return;
+            }
+
+            verifyBtn.innerText = 'Saving Profile...';
+            verifyBtn.disabled = true;
+
+            try {
+                const users = getLawyerUsers();
+                const alreadyExists = users.some((user) => user.email === email);
+                if (alreadyExists) {
+                    alert('This email is already registered. Please login instead.');
+                    return;
+                }
+
+                const profilePhoto = await readFileAsDataUrl(photoFile);
+
+                users.push({
+                    role: 'lawyer',
+                    fullName,
+                    email,
+                    password,
+                    licenseNo,
+                    contactNo,
+                    profilePhoto,
+                    description: '',
+                    createdAt: new Date().toISOString()
+                });
+
+                saveLawyerUsers(users);
+                sessionStorage.setItem('nyay_pravah_active_user', JSON.stringify({ role: 'lawyer', email, fullName }));
+
+                alert('Profile saved successfully. Proceeding to verification upload.');
+                window.location.href = 'lawerverification.html';
+            } catch (err) {
+                alert('Unable to save profile: ' + err.message);
+                console.error(err);
+            } finally {
+                verifyBtn.innerText = 'Verify Your Licence To Continue';
+                verifyBtn.disabled = false;
+            }
+        });
+
+        const backHomeBtn = document.querySelector('.back-home-btn');
+        if (backHomeBtn) {
+            backHomeBtn.addEventListener('click', () => {
+                window.location.href = 'index.html';
+            });
+        }
+
+        const backPrevBtn = document.querySelector('.back-previous-btn');
+        if (backPrevBtn) {
+            backPrevBtn.addEventListener('click', () => {
+                if (window.history.length > 1) {
+                    window.history.back();
+                    return;
+                }
+                window.location.href = 'lawerlogin.html';
+            });
+        }
+    </script>
 </body>
 
 </html>

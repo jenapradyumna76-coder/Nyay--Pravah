@@ -35,6 +35,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const currentPage = window.location.pathname.toLowerCase();
     const inHtmlFolder = currentPage.includes('/html/');
     const dashboardPath = inHtmlFolder ? 'index.html' : 'html/index.html';
+    const JUDGE_USERS_KEY = 'nyay_pravah_judge_users_v1';
+    const LAWYER_USERS_KEY = 'nyay_pravah_lawyer_users_v1';
+    const REMEMBERED_LOGIN_KEY = 'nyay_pravah_remembered_login_v1';
     const isPortalLoginPage = currentPage.includes('judgelogin.html') || currentPage.includes('lawerlogin.html');
     if (isPortalLoginPage) {
         alert('You have switched to the login page. Press OK to continue and fill your details.');
@@ -67,12 +70,30 @@ document.addEventListener('DOMContentLoaded', () => {
     // 4. Shared login form handling for Judge/Lawyer pages
     const loginForm = document.querySelector('.login-form');
     if (loginForm) {
+        const role = (loginForm.getAttribute('data-role') || 'User').toLowerCase();
+        const emailInput = loginForm.querySelector('input[type="email"]');
+        const passwordInput = loginForm.querySelector('input[type="password"]');
+        const rememberInput = loginForm.querySelector('.remember-checkbox');
+
+        try {
+            const rememberedRaw = localStorage.getItem(REMEMBERED_LOGIN_KEY);
+            if (rememberedRaw) {
+                const remembered = JSON.parse(rememberedRaw);
+                const rememberedForRole = remembered ? remembered[role] : null;
+                if (rememberedForRole && emailInput && passwordInput) {
+                    emailInput.value = rememberedForRole.email || '';
+                    passwordInput.value = rememberedForRole.password || '';
+                    if (rememberInput) {
+                        rememberInput.checked = true;
+                    }
+                }
+            }
+        } catch (error) {
+            console.warn('Unable to read remembered credentials.', error);
+        }
+
         loginForm.addEventListener('submit', (event) => {
             event.preventDefault();
-
-            const role = loginForm.getAttribute('data-role') || 'User';
-            const emailInput = loginForm.querySelector('input[type="email"]');
-            const passwordInput = loginForm.querySelector('input[type="password"]');
 
             const email = emailInput ? emailInput.value.trim() : '';
             const password = passwordInput ? passwordInput.value.trim() : '';
@@ -80,6 +101,53 @@ document.addEventListener('DOMContentLoaded', () => {
             if (!email || !password) {
                 alert('Please enter both email and password.');
                 return;
+            }
+
+            let users = [];
+            try {
+                const usersKey = role.includes('judge') ? JUDGE_USERS_KEY : LAWYER_USERS_KEY;
+                users = JSON.parse(localStorage.getItem(usersKey) || '[]');
+            } catch (error) {
+                console.warn('Unable to read registered users.', error);
+            }
+
+            if (users.length) {
+                const matchedUser = users.find((user) => user.email === email.toLowerCase() && user.password === password);
+                if (!matchedUser) {
+                    alert('Invalid email or password. Please try again.');
+                    return;
+                }
+                sessionStorage.setItem('nyay_pravah_active_user', JSON.stringify({
+                    role,
+                    email: matchedUser.email,
+                    fullName: matchedUser.fullName || ''
+                }));
+            }
+
+            if (rememberInput && rememberInput.checked) {
+                let rememberedState = {};
+                try {
+                    rememberedState = JSON.parse(localStorage.getItem(REMEMBERED_LOGIN_KEY) || '{}') || {};
+                } catch (error) {
+                    rememberedState = {};
+                }
+
+                rememberedState[role] = { email, password };
+                localStorage.setItem(REMEMBERED_LOGIN_KEY, JSON.stringify(rememberedState));
+            } else {
+                let rememberedState = {};
+                try {
+                    rememberedState = JSON.parse(localStorage.getItem(REMEMBERED_LOGIN_KEY) || '{}') || {};
+                } catch (error) {
+                    rememberedState = {};
+                }
+
+                delete rememberedState[role];
+                if (Object.keys(rememberedState).length) {
+                    localStorage.setItem(REMEMBERED_LOGIN_KEY, JSON.stringify(rememberedState));
+                } else {
+                    localStorage.removeItem(REMEMBERED_LOGIN_KEY);
+                }
             }
 
             const lowerRole = role.toLowerCase();
@@ -90,8 +158,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 roleDashboardPath = 'lawyer-dashboard.html';
             }
 
-            console.log(`${role} login attempt: ${email}`);
-            alert(`${role} login successful. Redirecting to dashboard.`);
+            console.log(`${lowerRole} login attempt: ${email}`);
+            alert(`${lowerRole} login successful. Redirecting to dashboard.`);
             window.location.href = roleDashboardPath;
         });
     }
@@ -113,7 +181,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     const verifyLicenseBtn = document.querySelector('.verify-license-btn');
-    if (verifyLicenseBtn) {
+    if (verifyLicenseBtn && !document.getElementById('registrationForm')) {
         verifyLicenseBtn.addEventListener('click', (event) => {
             event.preventDefault();
 
