@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NYAY PRAVAH | Lawyer Detail Missing Cases</title>
+    <link rel="stylesheet" href="../styles/lawyer-style.css">
+    <link rel="stylesheet" href="../styles/style.css">
+    <link rel="stylesheet" href="../styles/layout.css">
+    <link rel="stylesheet" href="../styles/components.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+
+<body data-lawyer-page="missing">
+
+    <div class="sidebar-hover-zone" aria-hidden="true"></div>
+
+    <aside class="sidebar">
+        <div class="sidebar-logo">
+            <img src="../asset/logo/mainlogo.jpeg" alt="Nav Pravah Logo" class="sidebar-logo-img">
+            <span class="sidebar-logo-text">NYAY PRAVAH</span>
+        </div>
+        <nav class="menu">
+            <a href="lawyer-dashboard.html"><i class="fas fa-folder"></i> My Cases</a>
+            <a href="lawyer-manual-review.html"><i class="fas fa-file-signature"></i> Manual Review Request</a>
+            <a href="lawyer-all-cases.html"><i class="fas fa-file-upload"></i> All Cases</a>
+            <a href="lawyer-pending-cases.html"><i class="fas fa-calendar-alt"></i> Pending Cases</a>
+            <a href="lawyer-detail-missing-cases.html" class="active"><i class="fas fa-file-excel"></i> Detail Missing
+                Cases</a>
+            <a href="lawyer-adjoinment-cases.html"><i class="fas fa-check-double"></i> Adjoinment Cases</a>
+            <a href="lawyer-analytics.html"><i class="fas fa-chart-line"></i> Analytics</a>
+            <a href="lawyer-profile.html"><i class="fas fa-user-circle"></i> Profile</a>
+            <a href="index.html" id="logoutBtn"><i class="fas fa-sign-out-alt"></i> Logout</a>
+        </nav>
+        <div class="user-profile">
+            <div class="avatar">LC</div>
+            <div class="info"><strong>Lead Counsel</strong><span>District Bar</span></div>
+        </div>
+    </aside>
+
+    <main class="main-content">
+        <header class="top-bar">
+            <div class="search-box">
+                <i class="fas fa-search"></i>
+                <input id="caseSearchInput" type="text" placeholder="Search by Case ID...">
+            </div>
+            <div class="header-actions">
+                <div class="live-status"><span class="pulse"></span> Documentation Queue</div>
+                <button class="refresh-btn" onclick="window.location.href='lawyer-dashboard.html'">
+                    <i class="fas fa-arrow-left"></i> Back To Dashboard
+                </button>
+            </div>
+        </header>
+
+        <section class="dashboard-header">
+            <h2>Detail Missing Cases</h2>
+            <p>Pending files flagged for incomplete details and document follow-up.</p>
+        </section>
+
+        <section class="reports-wrapper">
+            <article class="report-section">
+                <h3>Missing Detail Cases</h3>
+                <div id="lawyerMissingDetailsList" class="report-list"></div>
+            </article>
+        </section>
+    </main>
+
+    <script src="../scripts/dashboard.js"></script>
+    <script src="../scripts/lawyer-reports.js"></script>
+    <script>
+        const logoutBtn = document.getElementById('logoutBtn');
+        if (logoutBtn) {
+            logoutBtn.addEventListener('click', () => {
+                window.location.href = 'index.html';
+            });
+        }
+    </script>
+</body>
+
+</html>

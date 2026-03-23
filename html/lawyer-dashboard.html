@@ -23,9 +23,13 @@
         </div>
         <nav class="menu">
             <a href="lawyer-dashboard.html" class="active"><i class="fas fa-folder"></i> My Cases</a>
+            <a href="lawyer-manual-review.html"><i class="fas fa-file-signature"></i> Manual Review Request</a>
             <a href="lawyer-all-cases.html"><i class="fas fa-file-upload"></i> All Cases</a>
             <a href="lawyer-pending-cases.html"><i class="fas fa-calendar-alt"></i> Pending Cases</a>
+            <a href="lawyer-detail-missing-cases.html"><i class="fas fa-file-excel"></i> Detail Missing Cases</a>
+            <a href="lawyer-adjoinment-cases.html"><i class="fas fa-check-double"></i> Adjoinment Cases</a>
             <a href="lawyer-analytics.html"><i class="fas fa-chart-line"></i> Analytics</a>
+            <a href="lawyer-profile.html"><i class="fas fa-user-circle"></i> Profile</a>
             <a href="index.html" id="logoutBtn"><i class="fas fa-sign-out-alt"></i> Logout</a>
         </nav>
         <div class="user-profile">
@@ -60,6 +64,13 @@
                     <div class="segment fresh-seg" style="width: 50%;">0 FRESH</div>
                 </div>
             </div>
+        </section>
+
+        <section class="reports-wrapper" style="padding: 0 30px 20px 30px;">
+            <article class="report-section">
+                <h3>Manual Review Acceptance Updates</h3>
+                <div id="lawyerManualUpdatesList" class="report-list"></div>
+            </article>
         </section>
 
         <div class="split-grid">
@@ -174,6 +185,7 @@
         </div>
     </div>
     <script src="../scripts/dashboard.js"></script>
+    <script src="../scripts/manual-review.js"></script>
     <script>
         const logoutBtn = document.getElementById('logoutBtn');
         if (logoutBtn) {
