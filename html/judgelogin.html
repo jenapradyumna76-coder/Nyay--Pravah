@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 
 <head>
@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Judge Login - Nav Pravah</title>
     <link rel="stylesheet" href="../styles/login.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 
 <body>
@@ -32,9 +33,8 @@
                     <label for="judge-password" class="auth-label">Password</label>
                     <input id="judge-password" type="password" class="auth-input" placeholder="Enter password" required>
 
-                    
-
                     <button type="submit" class="auth-submit judge-theme">Sign In</button>
+                    <button type="button" class="secondary-btn forgot-password-btn">Forgot Password</button>
                     <button type="button" class="new-signin-btn">New Sign-In</button>
 
                     <div class="flow-actions">
@@ -90,7 +90,7 @@
 
                     <div class="footer-col footer-app-download">
                         <div class="app-card">
-                            <img src="../asset/logo/mainlogo.jpeg" alt="Nav Pravah Logo" class="footer-logo">
+                            <img src="../IMG1.jpeg" alt="Nav Pravah Logo" class="footer-logo">
                             <p>NAV PRAVAH</p>
                             <span class="tagline">Justice. Accelerated.</span>
                         </div>
@@ -120,7 +120,129 @@
         </footer>
     </main>
 
-    <script src="../scripts/auth.js"></script>
+    <script>
+        const SUPABASE_URL = 'https://hwvflwartrxmazzjypbp.supabase.co';
+        const SUPABASE_ANON_KEY = 'sb_publishable_aHsV710290uB_VKb-mcSvg_b0IO3aEO';
+        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        const loginForm = document.querySelector('.login-form');
+        const emailInput = document.getElementById('judge-email');
+        const passwordInput = document.getElementById('judge-password');
+        const signInBtn = loginForm.querySelector('.auth-submit');
+        const forgotPasswordBtn = document.querySelector('.forgot-password-btn');
+        const newSignInBtn = document.querySelector('.new-signin-btn');
+        const backHomeBtn = document.querySelector('.back-home-btn');
+        const backPrevBtn = document.querySelector('.back-previous-btn');
+
+        async function getCredentialSpecificMessage(email) {
+            try {
+                const { data, error } = await supabaseClient
+                    .from('judge_profiles')
+                    .select('email')
+                    .eq('email', email)
+                    .maybeSingle();
+
+                if (error) {
+                    return 'Invalid email or password.';
+                }
+
+                if (!data) {
+                    return 'Email is not registered.';
+                }
+
+                return 'Password is incorrect.';
+            } catch (_) {
+                return 'Invalid email or password.';
+            }
+        }
+
+        loginForm.addEventListener('submit', async (event) => {
+            event.preventDefault();
+
+            const email = emailInput.value.trim();
+            const password = passwordInput.value;
+
+            if (!email || !password) {
+                alert('Please enter both email and password.');
+                return;
+            }
+
+            signInBtn.disabled = true;
+            signInBtn.innerText = 'Signing In...';
+
+            try {
+                const { data, error } = await supabaseClient.auth.signInWithPassword({
+                    email,
+                    password
+                });
+
+                if (error) {
+                    const message = await getCredentialSpecificMessage(email);
+                    throw new Error(message);
+                }
+
+                if (!data?.user) {
+                    throw new Error('Login failed. Please try again.');
+                }
+
+                window.location.href = './judgedashboard.html';
+            } catch (err) {
+                alert('Login Error: ' + err.message);
+                console.error(err);
+            } finally {
+                signInBtn.disabled = false;
+                signInBtn.innerText = 'Sign In';
+            }
+        });
+
+        forgotPasswordBtn.addEventListener('click', async () => {
+            const email = emailInput.value.trim().toLowerCase();
+
+            if (!email) {
+                alert('Enter your email first, then click Forgot Password.');
+                emailInput.focus();
+                return;
+            }
+
+            forgotPasswordBtn.disabled = true;
+            forgotPasswordBtn.innerText = 'Sending...';
+
+            try {
+                const redirectUrl = new URL('./judgeresetpassword.html', window.location.href).toString();
+                const { error } = await supabaseClient.auth.resetPasswordForEmail(email, {
+                    redirectTo: redirectUrl
+                });
+
+                if (error) {
+                    throw error;
+                }
+
+                alert('Password reset link sent to your email. Please check your inbox.');
+            } catch (err) {
+                alert('Reset Password Error: ' + err.message);
+                console.error(err);
+            } finally {
+                forgotPasswordBtn.disabled = false;
+                forgotPasswordBtn.innerText = 'Forgot Password';
+            }
+        });
+
+        newSignInBtn.addEventListener('click', () => {
+            window.location.href = './newjudgeregester.html';
+        });
+
+        backHomeBtn.addEventListener('click', () => {
+            window.location.href = './index.html';
+        });
+
+        backPrevBtn.addEventListener('click', () => {
+            if (window.history.length > 1) {
+                window.history.back();
+                return;
+            }
+            window.location.href = './index.html';
+        });
+    </script>
 </body>
 
 </html>
