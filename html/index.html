@@ -21,16 +21,23 @@
 
         <div class="tagsection">
             <div id="tag">
-                <p>NYAY PRAVHA</p>
+                <p data-i18n="brand.name">NYAY PRAVHA</p>
             </div>
             <div id="tagline">
                 <p>&#2344;&#2381;&#2351;&#2366;&#2351; &#2325;&#2366; &#2346;&#2381;&#2352;&#2357;&#2366;&#2361;</p>
             </div>
         </div>
         <div class="logo-section">
-            <img src="../asset/logo/mainlogo.jpeg" alt="Nav Pravah Logo" class="logo-image">
+            <div class="logo_img">
+                <img src="../asset/logo/mainlogo.jpeg" alt="Nav Pravah Logo" class="logo-image">
+            </div>
             <div class="main_tagline">
-                <h3>The flow of justice </h3>
+                <div id="prblack">
+                    <h1>NYAY PRAVAH</h1>
+                </div>
+                <div id="pr_description">
+                    <p data-i18n="brand.flow">THE FLOW OF JUSTICE</p>
+                </div>
             </div>
         </div>
 
@@ -39,30 +46,40 @@
         <!-- [Section] Header Row 2: Primary navigation and role actions -->
         <nav class="navbar">
             <ul class="nav-links">
-                <li><a href="#" class="nav-link">Home</a></li>
+                <li><a href="#" class="nav-link" data-i18n="nav.home">Home</a></li>
                 <div class="nav-group">
-                    <a href="#" class="main-link">About</a>
+                    <a href="#" class="main-link" data-i18n="nav.about">About</a>
                     <div class="tertiary-menu">
-                        <a href="#about-content-panel" class="js-about-link" data-about="mission">Our Mission</a>
-                        <a href="#about-content-panel" class="js-about-link" data-about="team">The Team</a>
-                        <a href="#about-content-panel" class="js-about-link" data-about="tech">Tech Stack</a>
-                        <a href="#about-content-panel" class="js-about-link" data-about="roadmap">Roadmap</a>
-                        <a href="#about-content-panel" class="js-about-link" data-about="contact">Contact</a>
+                        <a href="#about-content-panel" class="js-about-link" data-about="mission"
+                            data-i18n="nav.about.mission">Our Mission</a>
+                        <a href="#about-content-panel" class="js-about-link" data-about="team"
+                            data-i18n="nav.about.team">The Team</a>
+                        <a href="#about-content-panel" class="js-about-link" data-about="tech"
+                            data-i18n="nav.about.tech">Tech Stack</a>
+                        <a href="#about-content-panel" class="js-about-link" data-about="roadmap"
+                            data-i18n="nav.about.roadmap">Roadmap</a>
+                        <a href="#about-content-panel" class="js-about-link" data-about="contact"
+                            data-i18n="nav.about.contact">Contact</a>
                     </div>
                 </div>
 
                 <div class="nav-group">
-                    <a href="#" class="main-link">Services</a>
+                    <a href="#" class="main-link" data-i18n="nav.services">Services</a>
                     <div class="tertiary-menu">
-                        <a href="#services-content-panel" class="js-service-link" data-service="case-search">Case
+                        <a href="#services-content-panel" class="js-service-link" data-service="case-search"
+                            data-i18n="nav.service.caseSearch">Case
                             Search</a>
-                        <a href="#services-content-panel" class="js-service-link" data-service="lawyer-portal">Lawyer
+                        <a href="#services-content-panel" class="js-service-link" data-service="lawyer-portal"
+                            data-i18n="nav.service.lawyerPortal">Lawyer
                             Portal</a>
-                        <a href="#services-content-panel" class="js-service-link" data-service="legal-aid">Legal
+                        <a href="#services-content-panel" class="js-service-link" data-service="legal-aid"
+                            data-i18n="nav.service.legalAid">Legal
                             Aid</a>
-                        <a href="#services-content-panel" class="js-service-link" data-service="document-vault">Document
+                        <a href="#services-content-panel" class="js-service-link" data-service="document-vault"
+                            data-i18n="nav.service.documentVault">Document
                             Vault</a>
-                        <a href="#services-content-panel" class="js-service-link" data-service="help-center">Help
+                        <a href="#services-content-panel" class="js-service-link" data-service="help-center"
+                            data-i18n="nav.service.helpCenter">Help
                             Center</a>
                     </div>
                 </div>
@@ -71,17 +88,17 @@
                     <button class="lang-btn main-link" type="button">EN</button>
                     <div class="tertiary-menu">
                         <a href="#" data-lang="en">English</a>
-                        <a href="#" data-lang="hi">Hindi</a>
-                        <a href="#">Odia</a>
-                        <a href="#">Telugu</a>
+                        <a href="#" data-lang="hi">हिंदी</a>
+                        <a href="#" data-lang="od">ଓଡ଼ିଆ</a>
+                        <a href="#" data-lang="te">తెలుగు</a>
                     </div>
                 </div>
             </ul>
 
             <div class="nav-actions">
                 <!-- [Behavior] Role-based quick access buttons -->
-                <button class="judge-btn" id="judge-portal-btn">Judge</button>
-                <button class="lawyer-btn" id="lawyer-portal-btn">Lawyer</button>
+                <button class="judge-btn" id="judge-portal-btn" data-i18n="action.judge">Judge</button>
+                <button class="lawyer-btn" id="lawyer-portal-btn" data-i18n="action.lawyer">Lawyer</button>
             </div>
         </nav>
 
@@ -101,35 +118,41 @@
         </section>
         <section class="services-ection" aria-labelledby="services-heading">
             <div class="services-shell">
-                <h2 class="services-heading" id="services-heading">Services</h2>
+                <h2 class="services-heading" id="services-heading" data-i18n="section.services">Services</h2>
                 <!-- [Behavior] Topic pills and navbar dropdown links update the same panel -->
                 <div class="section-topic-controls" role="tablist" aria-label="Service topics">
                     <button class="section-topic-btn is-active js-service-topic" data-service="case-search"
-                        type="button">Case Search</button>
-                    <button class="section-topic-btn js-service-topic" data-service="lawyer-portal" type="button">Lawyer
+                        type="button" data-i18n="nav.service.caseSearch">Case Search</button>
+                    <button class="section-topic-btn js-service-topic" data-service="lawyer-portal" type="button"
+                        data-i18n="nav.service.lawyerPortal">Lawyer
                         Portal</button>
-                    <button class="section-topic-btn js-service-topic" data-service="legal-aid" type="button">Legal
+                    <button class="section-topic-btn js-service-topic" data-service="legal-aid" type="button"
+                        data-i18n="nav.service.legalAid">Legal
                         Aid</button>
-                    <button class="section-topic-btn js-service-topic" data-service="document-vault"
-                        type="button">Document Vault</button>
-                    <button class="section-topic-btn js-service-topic" data-service="help-center" type="button">Help
+                    <button class="section-topic-btn js-service-topic" data-service="document-vault" type="button"
+                        data-i18n="nav.service.documentVault">Document Vault</button>
+                    <button class="section-topic-btn js-service-topic" data-service="help-center" type="button"
+                        data-i18n="nav.service.helpCenter">Help
                         Center</button>
                 </div>
                 <!-- [Section] Static service summary cards -->
                 <div class="services-grid">
                     <article class="service-card">
-                        <h3 class="service-title">AI Case Search</h3>
-                        <p class="service-text">Find judgments, precedents, and related case history quickly with
+                        <h3 class="service-title" data-i18n="service.ai.title">AI Case Search</h3>
+                        <p class="service-text" data-i18n="service.ai.text">Find judgments, precedents, and related case
+                            history quickly with
                             intelligent legal search.</p>
                     </article>
                     <article class="service-card">
-                        <h3 class="service-title">Lawyer Portal</h3>
-                        <p class="service-text">Manage client matters, track filings, and organize legal documents in
+                        <h3 class="service-title" data-i18n="service.lawyer.title">Lawyer Portal</h3>
+                        <p class="service-text" data-i18n="service.lawyer.text">Manage client matters, track filings,
+                            and organize legal documents in
                             one secure workspace.</p>
                     </article>
                     <article class="service-card">
-                        <h3 class="service-title">Judge Portal</h3>
-                        <p class="service-text">Enable judges to review case timelines, monitor hearing flow, and
+                        <h3 class="service-title" data-i18n="service.judge.title">Judge Portal</h3>
+                        <p class="service-text" data-i18n="service.judge.text">Enable judges to review case timelines,
+                            monitor hearing flow, and
                             access organized legal records quickly.</p>
                     </article>
                 </div>
@@ -145,7 +168,8 @@
 
         <section class="app-description-section" aria-labelledby="app-description-heading">
             <div class="app-description-shell">
-                <h2 class="app-description-heading" id="app-description-heading">Description</h2>
+                <h2 class="app-description-heading" id="app-description-heading" data-i18n="section.description">
+                    Description</h2>
                 <p class="app-description-text">
                     NYAY Pravah is an AI-powered legal platform designed to make justice workflows faster, simpler, and
                     more accessible.
@@ -167,39 +191,44 @@
 
         <section class="about-us-section" aria-labelledby="about-us-heading">
             <div class="about-us-shell">
-                <h2 class="about-us-heading" id="about-us-heading">About Us</h2>
-                <p class="about-us-intro">
+                <h2 class="about-us-heading" id="about-us-heading" data-i18n="section.about">About Us</h2>
+                <p class="about-us-intro" data-i18n="about.intro">
                     We are Team Code Dazzlers, building Nyay Pravah to transform how justice services are discovered,
                     understood, and delivered through smart digital tools.
                 </p>
                 <!-- [Behavior] Shared topic UI pattern: button-based tab-like controls -->
                 <div class="section-topic-controls" role="tablist" aria-label="About topics">
-                    <button class="section-topic-btn is-active js-about-topic" data-about="mission" type="button">Our
+                    <button class="section-topic-btn is-active js-about-topic" data-about="mission" type="button"
+                        data-i18n="nav.about.mission">Our
                         Mission</button>
-                    <button class="section-topic-btn js-about-topic" data-about="team" type="button">The Team</button>
-                    <button class="section-topic-btn js-about-topic" data-about="tech" type="button">Tech Stack</button>
-                    <button class="section-topic-btn js-about-topic" data-about="roadmap" type="button">Roadmap</button>
-                    <button class="section-topic-btn js-about-topic" data-about="contact" type="button">Contact</button>
+                    <button class="section-topic-btn js-about-topic" data-about="team" type="button"
+                        data-i18n="nav.about.team">The Team</button>
+                    <button class="section-topic-btn js-about-topic" data-about="tech" type="button"
+                        data-i18n="nav.about.tech">Tech Stack</button>
+                    <button class="section-topic-btn js-about-topic" data-about="roadmap" type="button"
+                        data-i18n="nav.about.roadmap">Roadmap</button>
+                    <button class="section-topic-btn js-about-topic" data-about="contact" type="button"
+                        data-i18n="nav.about.contact">Contact</button>
                 </div>
                 <!-- [Section] Static about summary cards -->
                 <div class="about-us-grid">
                     <article class="about-us-card">
-                        <h3 class="about-us-card-title">Our Vision</h3>
-                        <p class="about-us-card-text">
+                        <h3 class="about-us-card-title" data-i18n="about.vision.title">Our Vision</h3>
+                        <p class="about-us-card-text" data-i18n="about.vision.text">
                             To create a faster and more inclusive legal ecosystem where citizens, lawyers, and judges
                             can access trusted legal information without friction.
                         </p>
                     </article>
                     <article class="about-us-card">
-                        <h3 class="about-us-card-title">What We Build</h3>
-                        <p class="about-us-card-text">
+                        <h3 class="about-us-card-title" data-i18n="about.build.title">What We Build</h3>
+                        <p class="about-us-card-text" data-i18n="about.build.text">
                             AI-powered case discovery, lawyer and judge portals, and structured legal workflows that
                             reduce complexity and improve decision support.
                         </p>
                     </article>
                     <article class="about-us-card">
-                        <h3 class="about-us-card-title">Our Commitment</h3>
-                        <p class="about-us-card-text">
+                        <h3 class="about-us-card-title" data-i18n="about.commitment.title">Our Commitment</h3>
+                        <p class="about-us-card-text" data-i18n="about.commitment.text">
                             We focus on transparency, usability, and reliability so legal processes become clearer,
                             quicker, and more accessible to everyone.
                         </p>
@@ -217,24 +246,24 @@
 
         <section class="mentor-section" aria-label="Our mentor">
             <div class="mentor-shell">
-                <h2 class="mentor-heading">Our Mentor</h2>
+                <h2 class="mentor-heading" data-i18n="section.mentor">Our Mentor</h2>
                 <article class="mentor-layout">
                     <figure class="mentor-photo-wrap">
                         <img class="mentor-photo" src="../asset/immage/mentorpic.jpeg" alt="Team mentor portrait">
                     </figure>
                     <div class="mentor-content">
                         <h3 class="mentor-name">Dr. Ashis Kumar Dass</h3>
-                        <p class="mentor-role">Technical Mentor &amp; Strategic Advisor</p>
-                        <blockquote class="mentor-quote">
+                        <p class="mentor-role" data-i18n="mentor.role">Technical Mentor &amp; Strategic Advisor</p>
+                        <blockquote class="mentor-quote" data-i18n="mentor.quote">
                             "A distinguished academician and researcher at NIST University, Dr. Ashis Kumar Dass
                             serves as the primary mentor for the Nyay Pravah initiative."
                         </blockquote>
-                        <p class="mentor-text">
+                        <p class="mentor-text" data-i18n="mentor.text.one">
                             With over 15 years of expertise in Cloud Computing, Blockchain, and System Security, he
                             provides the foundational guidance necessary for building a transparent and secure digital
                             judicial ecosystem.
                         </p>
-                        <p class="mentor-text">
+                        <p class="mentor-text" data-i18n="mentor.text.two">
                             His research-driven approach ensures that our platform adheres to the highest standards of
                             data integrity and technical excellence, bridging the gap between innovative engineering
                             and judicial reliability.
@@ -250,39 +279,48 @@
 
                     <div class="footer-col">
                         <ul>
-                            <li><a href="footer/ai-case-search.html" target="_blank" rel="noopener noreferrer">AI Case
+                            <li><a href="footer/ai-case-search.html" target="_blank" rel="noopener noreferrer"
+                                    data-i18n="footer.ai">AI Case
                                     Search</a></li>
-                            <li><a href="footer/faq-user-guides.html" target="_blank" rel="noopener noreferrer">FAQ /
+                            <li><a href="footer/faq-user-guides.html" target="_blank" rel="noopener noreferrer"
+                                    data-i18n="footer.faq">FAQ /
                                     User Guides</a></li>
-                            <li><a href="footer/service-status.html" target="_blank" rel="noopener noreferrer">Service
+                            <li><a href="footer/service-status.html" target="_blank" rel="noopener noreferrer"
+                                    data-i18n="footer.status">Service
                                     Status</a></li>
-                            <li><a href="footer/developer-api.html" target="_blank" rel="noopener noreferrer">Developer
+                            <li><a href="footer/developer-api.html" target="_blank" rel="noopener noreferrer"
+                                    data-i18n="footer.api">Developer
                                     API</a></li>
                         </ul>
                     </div>
 
                     <div class="footer-col">
                         <ul>
-                            <li><a href="footer/privacy-policy.html" target="_blank" rel="noopener noreferrer">Privacy
+                            <li><a href="footer/privacy-policy.html" target="_blank" rel="noopener noreferrer"
+                                    data-i18n="footer.privacy">Privacy
                                     Policy</a></li>
-                            <li><a href="footer/data-handling-protocol.html" target="_blank"
-                                    rel="noopener noreferrer">Data Handling Protocol</a></li>
-                            <li><a href="footer/feedback-portal.html" target="_blank" rel="noopener noreferrer">Feedback
+                            <li><a href="footer/data-handling-protocol.html" target="_blank" rel="noopener noreferrer"
+                                    data-i18n="footer.data">Data Handling Protocol</a></li>
+                            <li><a href="footer/feedback-portal.html" target="_blank" rel="noopener noreferrer"
+                                    data-i18n="footer.feedback">Feedback
                                     Portal</a></li>
-                            <li><a href="footer/accessibility.html" target="_blank"
-                                    rel="noopener noreferrer">Accessibility</a></li>
+                            <li><a href="footer/accessibility.html" target="_blank" rel="noopener noreferrer"
+                                    data-i18n="footer.accessibility">Accessibility</a></li>
                         </ul>
                     </div>
 
                     <div class="footer-col">
                         <ul>
-                            <li><a href="footer/about-nav-pravah.html" target="_blank" rel="noopener noreferrer">About
+                            <li><a href="footer/about-nav-pravah.html" target="_blank" rel="noopener noreferrer"
+                                    data-i18n="footer.about.nyay">About
                                     NYAY Pravah</a></li>
-                            <li><a href="footer/team-code-dazzlers.html" target="_blank" rel="noopener noreferrer">The
+                            <li><a href="footer/team-code-dazzlers.html" target="_blank" rel="noopener noreferrer"
+                                    data-i18n="footer.about.team">The
                                     Team (Code Dazzlers)</a></li>
-                            <li><a href="footer/technology-stack.html" target="_blank"
-                                    rel="noopener noreferrer">Technology Stack</a></li>
-                            <li><a href="footer/mherm-hackathon-26.html" target="_blank" rel="noopener noreferrer">MHERM
+                            <li><a href="footer/technology-stack.html" target="_blank" rel="noopener noreferrer"
+                                    data-i18n="footer.about.tech">Technology Stack</a></li>
+                            <li><a href="footer/mherm-hackathon-26.html" target="_blank" rel="noopener noreferrer"
+                                    data-i18n="footer.about.hackathon">MHERM
                                     Hackathon '26</a></li>
                         </ul>
                     </div>
@@ -290,8 +328,8 @@
                     <div class="footer-col footer-app-download">
                         <div class="app-card">
                             <img src="../asset/logo/mainlogo.jpeg" alt="Nav Pravah Logo" class="footer-logo">
-                            <p>NAV PRAVAH</p>
-                            <span class="tagline">Justice. Accelerated.</span>
+                            <p data-i18n="footer.app.name">NAV PRAVAH</p>
+                            <span class="tagline" data-i18n="footer.app.tagline">Justice. Accelerated.</span>
                         </div>
                     </div>
                 </div>
@@ -299,17 +337,21 @@
 
             <div class="footer-secondary-info">
                 <div class="policy-links">
-                    <a href="footer/website-policies.html" target="_blank" rel="noopener noreferrer">Website
+                    <a href="footer/website-policies.html" target="_blank" rel="noopener noreferrer"
+                        data-i18n="footer.policy.website">Website
                         Policies</a> |
-                    <a href="footer/contact-us.html" target="_blank" rel="noopener noreferrer">Contact Us</a> |
-                    <a href="footer/help.html" target="_blank" rel="noopener noreferrer">Help</a> |
-                    <a href="footer/disclaimer.html" target="_blank" rel="noopener noreferrer">Disclaimer</a>
+                    <a href="footer/contact-us.html" target="_blank" rel="noopener noreferrer"
+                        data-i18n="footer.policy.contact">Contact Us</a> |
+                    <a href="footer/help.html" target="_blank" rel="noopener noreferrer"
+                        data-i18n="footer.policy.help">Help</a> |
+                    <a href="footer/disclaimer.html" target="_blank" rel="noopener noreferrer"
+                        data-i18n="footer.policy.disclaimer">Disclaimer</a>
                 </div>
 
                 <div class="copyright-text">
-                    <p>Content Managed & Maintained by **Code Dazzlers**.</p>
-                    <p>Built for the **MHERM Hackathon 2026**.</p>
-                    <p>Last Data Update: March 19, 2026</p>
+                    <p data-i18n="footer.copy.managed">Content Managed & Maintained by Code Dazzlers.</p>
+                    <p data-i18n="footer.copy.built">Built for the MHERM Hackathon 2026.</p>
+                    <p data-i18n="footer.copy.update">Last Data Update: March 19, 2026</p>
                 </div>
 
                 <div class="partner-logos">
@@ -321,6 +363,7 @@
     <!-- [Note] Framework include kept for future interactive components -->
     <script src="https://cdn.jsdelivr.net/npm/vue@3/dist/vue.global.js"></script>
     <!-- [Section] App scripts: UI interactions + auth/navigation handlers -->
+    <script src="../scripts/i18n.js"></script>
     <script src="../scripts/main.js"></script>
     <script src="../scripts/auth.js"></script>
     <script>

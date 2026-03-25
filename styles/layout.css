@@ -109,11 +109,20 @@ main {
     margin-left: 20px;
 }
 .main_tagline{
-    display: flex;
+
     justify-content: center;
     align-items: center ;
-    margin-bottom: 5rem;
-    color: #0047AB;
+    color: #CFB53B;
+   margin-left: 1rem;
+}
+#prblack{
+    color: black;
+    
+}
+#pr_description{
+    color: #CFB53B;
+    font-size: 1.1rem;
+    font-weight: 500;
 }
 #tagline {
     color: white;
