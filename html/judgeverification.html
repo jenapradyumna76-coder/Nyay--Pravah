@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Judge Licence Verification - NYAY Pravah</title>
     <link rel="stylesheet" href="../styles/login.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 
 <body>
@@ -21,8 +22,8 @@
 
         <section class="auth-shell">
             <div class="auth-card popup-card">
-                <h1 class="auth-title">Judge Licence Verification</h1>
-                <p class="auth-subtitle">Upload front and back images for licence verification.</p>
+                <h1 class="auth-title">Judge Licence Upload</h1>
+                <p class="auth-subtitle">Upload front and back images and continue to dashboard.</p>
 
                 <form class="verification-upload-form" id="uploadForm">
                     <label class="auth-label" for="judge-front-proof">Upload Front Image</label>
@@ -34,7 +35,7 @@
                         accept="image/*" required>
 
                     <button class="auth-submit judge-theme upload-verification-btn" id="submitBtn" type="submit">
-                        Submit Verification
+                        Upload Licence
                     </button>
 
                     <div class="flow-actions">
@@ -91,7 +92,7 @@
 
                 <div class="footer-col footer-app-download">
                     <div class="app-card">
-                        <img src="../asset/logo/mainlogo.jpeg" alt="Nav Pravah Logo" class="footer-logo">
+                        <img src="../IMG1.jpeg" alt="Nav Pravah Logo" class="footer-logo">
                         <p>NAV PRAVAH</p>
                         <span class="tagline">Justice. Accelerated.</span>
                     </div>
@@ -119,7 +120,129 @@
         </div>
     </footer>
 
-    <script src="../scripts/auth.js"></script>
+    <script>
+        const SUPABASE_URL = 'https://hwvflwartrxmazzjypbp.supabase.co';
+        const SUPABASE_ANON_KEY = 'sb_publishable_aHsV710290uB_VKb-mcSvg_b0IO3aEO';
+        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        const uploadForm = document.getElementById('uploadForm');
+        const submitBtn = document.getElementById('submitBtn');
+        const homeBtn = document.getElementById('btnHome');
+        const prevBtn = document.getElementById('btnPrev');
+        const pageParams = new URLSearchParams(window.location.search);
+
+        function getPendingVerificationData() {
+            try {
+                const raw = localStorage.getItem('pending_judge_verification');
+                return raw ? JSON.parse(raw) : null;
+            } catch (_) {
+                return null;
+            }
+        }
+
+        function isStaleUserJwtError(error) {
+            const message = (error?.message || '').toLowerCase();
+            return message.includes('user from sub claim in jwt does not exist');
+        }
+
+        async function uploadFileToStorage(file, userId, sideLabel) {
+            const ext = (file.name.split('.').pop() || 'jpg').toLowerCase();
+            const safeSide = sideLabel === 'front' ? 'front' : 'back';
+            const filePath = `${userId}/${Date.now()}-${safeSide}.${ext}`;
+
+            const { data, error } = await supabaseClient
+                .storage
+                .from('judge-licenses')
+                .upload(filePath, file, {
+                    cacheControl: '3600',
+                    upsert: true,
+                    contentType: file.type || 'application/octet-stream'
+                });
+
+            if (error) throw error;
+            return data.path;
+        }
+
+        async function resolveUploadUserId() {
+            const { data: userData, error: userError } = await supabaseClient.auth.getUser();
+
+            if (!userError && userData?.user?.id) {
+                return userData.user.id;
+            }
+
+            const pending = getPendingVerificationData();
+            const paramUserId = pageParams.get('uid');
+            const targetUserId = pending?.userId || paramUserId;
+
+            if (!targetUserId) {
+                throw new Error('No active session found. Please register/login again.');
+            }
+
+            const { data: profileData, error: profileError } = await supabaseClient
+                .from('judge_profiles')
+                .select('id')
+                .eq('id', targetUserId)
+                .maybeSingle();
+
+            if (profileError) {
+                throw new Error(`Profile lookup failed: ${profileError.message}`);
+            }
+
+            if (!profileData?.id) {
+                throw new Error('Judge profile not found. Please register again.');
+            }
+
+            return profileData.id;
+        }
+
+        uploadForm.addEventListener('submit', async (event) => {
+            event.preventDefault();
+
+            const frontFile = document.getElementById('judge-front-proof').files?.[0];
+            const backFile = document.getElementById('judge-back-proof').files?.[0];
+
+            if (!frontFile || !backFile) {
+                alert('Please upload both front and back license images.');
+                return;
+            }
+
+            submitBtn.disabled = true;
+            submitBtn.innerText = 'Uploading...';
+
+            try {
+                const uploadUserId = await resolveUploadUserId();
+
+                await uploadFileToStorage(frontFile, uploadUserId, 'front');
+                await uploadFileToStorage(backFile, uploadUserId, 'back');
+
+                localStorage.removeItem('pending_judge_verification');
+
+                alert('License uploaded successfully. Redirecting to dashboard.');
+                window.location.href = './judgedashboard.html';
+            } catch (error) {
+                if (isStaleUserJwtError(error)) {
+                    await supabaseClient.auth.signOut({ scope: 'local' });
+                    alert('Your session is outdated. Please register/login again.');
+                    window.location.href = './newjudgeregester.html';
+                    return;
+                }
+
+                alert('Upload error: ' + error.message);
+                console.error(error);
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.innerText = 'Upload Licence';
+            }
+        });
+
+        homeBtn.addEventListener('click', () => {
+            window.location.href = './index.html';
+        });
+
+        prevBtn.addEventListener('click', () => {
+            window.history.back();
+        });
+    </script>
 
 </body>
 
