@@ -1,18 +1,19 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Judge Verification - Nav Pravah</title>
+    <title>Judge Verification - NYAY Pravah</title>
     <link rel="stylesheet" href="../styles/login.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 
 <body>
     <main>
         <div class="tagsection">
             <div id="tag">
-                <p>NAV PRAVHA</p>
+                <p>NYAY PRAVHA</p>
             </div>
             <div id="tagline">
                 <p>&#2344;&#2381;&#2351;&#2366;&#2351; &#2325;&#2366; &#2346;&#2381;&#2352;&#2357;&#2366;&#2361;</p>
@@ -21,8 +22,8 @@
 
         <section class="auth-shell">
             <div class="auth-card register-card">
-                <h1 class="auth-title">Judge New User Verification</h1>
-                <p class="auth-subtitle">Complete your profile to continue with license verification.</p>
+                <h1 class="auth-title">Judge New Registration</h1>
+                <p class="auth-subtitle">Create your account to continue.</p>
 
                 <form id="registrationForm" class="verification-form" data-role="judge">
                     <label class="auth-label" for="judge-full-name">Name </label>
@@ -40,19 +41,11 @@
                         required>
 
                     <label class="auth-label" for="judge-license-no">Enter Your Licence No</label>
-                    <input class="auth-input" id="judge-license-no" name="licenseNo" type="text" required>
+                    <input class="auth-input" id="judge-license-no" name="licenseNo" type="text"
+                        pattern="[A-Za-z0-9]+" title="License number can contain letters and numbers only." required>
 
-                    <label class="auth-label" for="judge-contact-no">Contact Number</label>
-                    <input class="auth-input" id="judge-contact-no" name="contactNo" type="tel"
-                        placeholder="10-digit mobile number" required>
-
-                    <label class="auth-label" for="judge-photo">Profile Photo</label>
-                    <input class="auth-input file-input" id="judge-photo" name="profilePhoto" type="file"
-                        accept="image/*" required>
-
-                    <button id="verifyBtn" class="auth-submit judge-theme verify-license-btn" type="submit">Verify Your
-                        Licence To
-                        Continue</button>
+                    <button id="verifyBtn" class="auth-submit judge-theme verify-license-btn" type="submit">Create
+                        Account</button>
 
                     <div class="flow-actions">
                         <button id="backHome" class="secondary-btn back-home-btn" type="button">Back To Home</button>
@@ -108,7 +101,7 @@
 
                     <div class="footer-col footer-app-download">
                         <div class="app-card">
-                            <img src="../asset/logo/mainlogo.jpeg" alt="Nav Pravah Logo" class="footer-logo">
+                            <img src="../IMG1.jpeg" alt="Nav Pravah Logo" class="footer-logo">
                             <p>NAV PRAVAH</p>
                             <span class="tagline">Justice. Accelerated.</span>
                         </div>
@@ -138,31 +131,22 @@
         </footer>
     </main>
     <script>
-        const JUDGE_USERS_KEY = 'nyay_pravah_judge_users_v1';
+        const SUPABASE_URL = 'https://hwvflwartrxmazzjypbp.supabase.co';
+        const SUPABASE_ANON_KEY = 'sb_publishable_aHsV710290uB_VKb-mcSvg_b0IO3aEO';
+
+        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
         const registrationForm = document.getElementById('registrationForm');
         const verifyBtn = document.getElementById('verifyBtn');
 
-        function getJudgeUsers() {
-            try {
-                const value = localStorage.getItem(JUDGE_USERS_KEY);
-                return value ? JSON.parse(value) : [];
-            } catch (error) {
-                console.warn('Could not parse stored judge users. Resetting.', error);
-                return [];
+        function redirectAfterRegistration(userId, email) {
+            const verifyUrl = new URL('./judgeverification.html', window.location.href);
+            if (userId) {
+                verifyUrl.searchParams.set('uid', userId);
             }
-        }
-
-        function saveJudgeUsers(users) {
-            localStorage.setItem(JUDGE_USERS_KEY, JSON.stringify(users));
-        }
-
-        function readFileAsDataUrl(file) {
-            return new Promise((resolve, reject) => {
-                const reader = new FileReader();
-                reader.onload = () => resolve(reader.result);
-                reader.onerror = () => reject(new Error('Could not read profile photo.'));
-                reader.readAsDataURL(file);
-            });
+            if (email) {
+                verifyUrl.searchParams.set('email', email);
+            }
+            window.location.assign(verifyUrl.toString());
         }
 
         registrationForm.addEventListener('submit', async (e) => {
@@ -173,55 +157,77 @@
             const password = document.getElementById('judge-password').value;
             const confirmPassword = document.getElementById('judge-confirm-password').value;
             const licenseNo = document.getElementById('judge-license-no').value.trim();
-            const contactNo = document.getElementById('judge-contact-no').value.trim();
-            const photoInput = document.getElementById('judge-photo');
-            const photoFile = photoInput && photoInput.files ? photoInput.files[0] : null;
 
-            if (!fullName || !email || !password || !licenseNo || !contactNo || !photoFile) {
+            if (!fullName || !email || !password || !confirmPassword || !licenseNo) {
                 alert('Please fill all required fields.');
                 return;
             }
 
-            if (password !== confirmPassword) {
-                alert('Password and confirm password do not match.');
+            if (!/^[A-Za-z0-9]+$/.test(licenseNo)) {
+                alert('License number can contain letters and numbers only.');
                 return;
             }
 
-            verifyBtn.innerText = 'Saving Profile...';
+            if (password !== confirmPassword) {
+                alert('Passwords do not match.');
+                return;
+            }
+
+            verifyBtn.innerText = 'Creating Account...';
             verifyBtn.disabled = true;
 
             try {
-                const users = getJudgeUsers();
-                const alreadyExists = users.some((user) => user.email === email);
-                if (alreadyExists) {
-                    alert('This email is already registered. Please login instead.');
-                    return;
-                }
-
-                const profilePhoto = await readFileAsDataUrl(photoFile);
-
-                users.push({
-                    role: 'judge',
-                    fullName,
-                    email,
-                    password,
-                    licenseNo,
-                    contactNo,
-                    profilePhoto,
-                    description: '',
-                    createdAt: new Date().toISOString()
+                const { data, error } = await supabaseClient.auth.signUp({
+                    email: email,
+                    password: password,
+                    options: {
+                        data: {
+                            full_name: fullName,
+                            license_no: licenseNo,
+                            role: 'judge'
+                        }
+                    }
                 });
 
-                saveJudgeUsers(users);
-                sessionStorage.setItem('nyay_pravah_active_user', JSON.stringify({ role: 'judge', email, fullName }));
+                if (error) throw error;
 
-                alert('Profile saved successfully. Proceeding to verification upload.');
-                window.location.href = 'judgeverification.html';
+                if (data.user) {
+                    const { error: profileError } = await supabaseClient
+                        .from('judge_profiles')
+                        .upsert({
+                            id: data.user.id,
+                            email: email,
+                            full_name: fullName,
+                            license_no: licenseNo,
+                            role: 'judge'
+                        }, { onConflict: 'id' });
+
+                    if (profileError) {
+                        throw new Error(
+                            `Account created in auth, but profile save failed: ${profileError.message}. ` +
+                            'Check table name (judge_profiles) and RLS policies.'
+                        );
+                    }
+
+                    localStorage.setItem('pending_judge_verification', JSON.stringify({
+                        userId: data.user.id,
+                        email,
+                        fullName,
+                        licenseNo,
+                        createdAt: Date.now()
+                    }));
+
+                    alert('Registration successful. Continue to licence verification.');
+                    redirectAfterRegistration(data.user.id, email);
+                    return;
+                } else {
+                    throw new Error('Signup did not return a user. Check Supabase Auth settings.');
+                }
             } catch (err) {
-                alert('Unable to save profile: ' + err.message);
+                alert('Auth Error: ' + err.message);
                 console.error(err);
             } finally {
-                verifyBtn.innerText = 'Verify Your Licence To Continue';
+                verifyBtn.innerText = 'Create Account';
                 verifyBtn.disabled = false;
             }
         });
