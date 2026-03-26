@@ -1,18 +1,19 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Lawyer Licence Verification</title>
-    <link rel="stylesheet" href="../styles/login.css">
+    <link rel="stylesheet" href="./styles/login.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 
 <body>
     <main>
         <div class="tagsection">
             <div id="tag">
-                <p>NAV PRAVHA</p>
+                <p>NYAY PRAVHA</p>
             </div>
             <div id="tagline">
                 <p>&#2344;&#2381;&#2351;&#2366;&#2351; &#2325;&#2366; &#2346;&#2381;&#2352;&#2357;&#2366;&#2361;</p>
@@ -24,7 +25,7 @@
                 <h1 class="auth-title">Lawyer Licence Verification</h1>
                 <p class="auth-subtitle">Upload front and back images for licence verification.</p>
 
-                <form class="verification-upload-form">
+                <form class="verification-upload-form" id="uploadForm">
                     <label class="auth-label" for="lawyer-front-proof">Upload Front Image</label>
                     <input class="auth-input file-input" id="lawyer-front-proof" name="frontProof" type="file"
                         accept="image/*" required>
@@ -33,12 +34,12 @@
                     <input class="auth-input file-input" id="lawyer-back-proof" name="backProof" type="file"
                         accept="image/*" required>
 
-                    <button class="auth-submit lawyer-theme upload-verification-btn" type="button">Submit
+                    <button class="auth-submit lawyer-theme upload-verification-btn" id="submitBtn" type="submit">Submit
                         Verification</button>
 
                     <div class="flow-actions">
-                        <button class="secondary-btn back-home-btn" type="button">Back To Home</button>
-                        <button class="secondary-btn back-previous-btn" type="button">Back To Previous</button>
+                        <button class="secondary-btn back-home-btn" id="btnHome" type="button">Back To Home</button>
+                        <button class="secondary-btn back-previous-btn" id="btnPrev" type="button">Back To Previous</button>
                     </div>
                 </form>
             </div>
@@ -77,7 +78,7 @@
                     <div class="footer-col">
                         <ul>
                             <li><a href="footer/about-nav-pravah.html" target="_blank" rel="noopener noreferrer">About
-                                    Nav Pravah</a></li>
+                                    Na Pravah</a></li>
                             <li><a href="footer/team-code-dazzlers.html" target="_blank" rel="noopener noreferrer">The
                                     Team (Code Dazzlers)</a></li>
                             <li><a href="footer/technology-stack.html" target="_blank"
@@ -89,7 +90,7 @@
 
                     <div class="footer-col footer-app-download">
                         <div class="app-card">
-                            <img src="../asset/logo/mainlogo.jpeg" alt="Nav Pravah Logo" class="footer-logo">
+                            <img src="./IMG1.jpeg" alt="Nav Pravah Logo" class="footer-logo">
                             <p>NAV PRAVAH</p>
                             <span class="tagline">Justice. Accelerated.</span>
                         </div>
@@ -119,7 +120,84 @@
         </footer>
     </main>
 
-    <script src="../scripts/auth.js"></script>
+    <script>
+        // Use dedicated lawyer project credentials to keep lawyer data isolated from judge project data.
+        const LAWYER_SUPABASE_URL = 'https://shotgiqungofuoquwpzw.supabase.co';
+        const LAWYER_SUPABASE_ANON_KEY = 'sb_publishable_gmf7zxCsLx4MOKZ-aXMw7Q_alAgKkaQ';
+        const supabaseClient = supabase.createClient(LAWYER_SUPABASE_URL, LAWYER_SUPABASE_ANON_KEY);
+
+        const uploadForm = document.getElementById('uploadForm');
+        const submitBtn = document.getElementById('submitBtn');
+        const homeBtn = document.getElementById('btnHome');
+        const prevBtn = document.getElementById('btnPrev');
+
+        async function uploadFileToStorage(file, userId, sideLabel) {
+            const ext = (file.name.split('.').pop() || 'jpg').toLowerCase();
+            const safeSide = sideLabel === 'front' ? 'front' : 'back';
+            const filePath = `${userId}/${Date.now()}-${safeSide}.${ext}`;
+
+            const { data, error } = await supabaseClient
+                .storage
+                .from('lawyer-licenses')
+                .upload(filePath, file, {
+                    cacheControl: '3600',
+                    upsert: true,
+                    contentType: file.type || 'application/octet-stream'
+                });
+
+            if (error) throw error;
+            return data.path;
+        }
+
+        uploadForm.addEventListener('submit', async (event) => {
+            event.preventDefault();
+
+            const frontFile = document.getElementById('lawyer-front-proof').files?.[0];
+            const backFile = document.getElementById('lawyer-back-proof').files?.[0];
+
+            if (!frontFile || !backFile) {
+                alert('Please upload both front and back license images.');
+                return;
+            }
+
+            submitBtn.disabled = true;
+            submitBtn.innerText = 'Uploading...';
+
+            try {
+                const { data: userData, error: userError } = await supabaseClient.auth.getUser();
+                if (userError) throw userError;
+
+                const user = userData?.user;
+                if (!user) {
+                    throw new Error('No active session found. Please log in again before uploading licence files.');
+                }
+
+                await uploadFileToStorage(frontFile, user.id, 'front');
+                await uploadFileToStorage(backFile, user.id, 'back');
+
+                alert('Licence uploaded successfully. Redirecting to lawyer dashboard.');
+                window.location.href = './lawyer-dashboard.html';
+            } catch (error) {
+                alert('Upload error: ' + error.message);
+                console.error(error);
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.innerText = 'Submit Verification';
+            }
+        });
+
+        homeBtn.addEventListener('click', () => {
+            window.location.href = './index.html';
+        });
+
+        prevBtn.addEventListener('click', () => {
+            if (window.history.length > 1) {
+                window.history.back();
+                return;
+            }
+            window.location.href = './nwelawyerregester.html';
+        });
+    </script>
 </body>
 
 </html>
