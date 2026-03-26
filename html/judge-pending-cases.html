@@ -4,161 +4,220 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NYAY PRAVAH | Judge Pending Cases</title>
+    <title>Pending Cases - NYAY PRAVAH</title>
     <link rel="stylesheet" href="../styles/style.css">
     <link rel="stylesheet" href="../styles/layout.css">
     <link rel="stylesheet" href="../styles/components.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="icon" href="../asset/logo/mainlogo.jpeg" type="image/svg+xml">
 </head>
 
-<body data-judge-page="pending">
+<body>
+    <div class="dashboard-container">
+        <!-- Sidebar -->
+        <nav class="sidebar">
+            <div class="sidebar-header">
+                <img src="../asset/logo/mainlogo.jpeg" alt="NYAY PRAVAH" class="logo">
+                <h2>NYAY PRAVAH</h2>
+            </div>
 
-    <div class="sidebar-hover-zone" aria-hidden="true"></div>
+            <ul class="sidebar-menu">
+                <li>
+                    <a href="judgedashboard.html">
+                        <i class="fas fa-tachometer-alt"></i>
+                        <span>Dashboard</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="judge-today-cases.html">
+                        <i class="fas fa-calendar-day"></i>
+                        <span>Today Cases</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="judge-all-cases.html">
+                        <i class="fas fa-folder-open"></i>
+                        <span>All Cases</span>
+                    </a>
+                </li>
+                <li class="active">
+                    <a href="judge-pending-cases.html">
+                        <i class="fas fa-clock"></i>
+                        <span>Pending Cases</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="judge-adjoined-cases.html">
+                        <i class="fas fa-link"></i>
+                        <span>Adjoined Cases</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="judge-manual-requests.html">
+                        <i class="fas fa-file-signature"></i>
+                        <span>Manual Requests</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="judge-profile.html">
+                        <i class="fas fa-user"></i>
+                        <span>Profile</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="judge-analytics.html">
+                        <i class="fas fa-chart-bar"></i>
+                        <span>Analytics</span>
+                    </a>
+                </li>
+            </ul>
 
-    <aside class="sidebar">
-        <div class="sidebar-logo">
-            <img src="../asset/logo/mainlogo.jpeg" alt="Nav Pravah Logo" class="sidebar-logo-img">
-            <span class="sidebar-logo-text">NYAY PRAVAH</span>
-        </div>
-        <nav class="menu">
-            <a href="judge-dashboard.html"><i class="fas fa-columns"></i> Dashboard</a>
-            <a href="judge-manual-requests.html"><i class="fas fa-user-check"></i> Manual Requests</a>
-            <a href="judge-today-cases.html"><i class="fas fa-calendar-day"></i> Today Cases</a>
-            <a href="judge-all-cases.html"><i class="fas fa-folder-open"></i> All Cases</a>
-            <a href="judge-pending-cases.html" class="active"><i class="fas fa-clock"></i> Pending Cases</a>
-            <a href="judge-adjoined-cases.html"><i class="fas fa-check-circle"></i> Adjoined Cases</a>
-            <a href="judge-analytics.html"><i class="fas fa-chart-line"></i> Analytics</a>
-            <a href="judge-profile.html"><i class="fas fa-user-circle"></i> Profile</a>
-            <div class="divider"></div>
-            <a href="#" id="logoutBtn"><i class="fas fa-sign-out-alt"></i> Logout</a>
+            <div class="sidebar-footer">
+                <div class="user-info">
+                    <div class="user-avatar">
+                        <i class="fas fa-user-circle"></i>
+                    </div>
+                    <div class="user-details">
+                        <span class="user-name">Judge Sharma</span>
+                        <span class="user-role">District Judge</span>
+                    </div>
+                </div>
+            </div>
         </nav>
-        <div class="user-profile">
-            <div class="avatar">HH</div>
-            <div class="info">
-                <strong>Hon. Judge</strong>
-                <span>Courtroom 04</span>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <header class="page-header">
+                <div class="header-left">
+                    <h1><i class="fas fa-clock"></i> Pending Cases</h1>
+                    <p class="page-subtitle">Currently pending cases assigned to you</p>
+                </div>
+                <div class="header-right">
+                    <button class="btn-primary" onclick="refreshCases()">
+                        <i class="fas fa-sync-alt"></i> Refresh
+                    </button>
+                </div>
+            </header>
+
+            <div class="filters-section">
+                <div class="filters-row">
+                    <div class="filter-group">
+                        <label for="status-filter">Status:</label>
+                        <select id="status-filter" onchange="filterCases()">
+                            <option value="all">All</option>
+                            <option value="pending">Pending</option>
+                            <option value="in-progress">In Progress</option>
+                            <option value="completed">Completed</option>
+                            <option value="postponed">Postponed</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label for="type-filter">Case Type:</label>
+                        <select id="type-filter" onchange="filterCases()">
+                            <option value="all">All Types</option>
+                            <option value="civil">Civil</option>
+                            <option value="criminal">Criminal</option>
+                            <option value="family">Family</option>
+                            <option value="property">Property</option>
+                            <option value="commercial">Commercial</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label for="priority-filter">Priority:</label>
+                        <select id="priority-filter" onchange="filterCases()">
+                            <option value="all">All Priority</option>
+                            <option value="urgent">Urgent</option>
+                            <option value="high">High</option>
+                            <option value="medium">Medium</option>
+                        </select>
+                    </div>
+                    <div class="search-group">
+                        <input type="text" id="search-input" placeholder="Search cases..." onkeyup="filterCases()">
+                        <i class="fas fa-search"></i>
+                    </div>
+                </div>
+            </div>
+
+            <div class="cases-table-container">
+                <table class="cases-table" id="cases-table">
+                    <thead>
+                        <tr>
+                            <th>Case ID</th>
+                            <th>Type</th>
+                            <th>Title</th>
+                            <th>Parties</th>
+                            <th>Time</th>
+                            <th>Court Room</th>
+                            <th>Judge</th>
+                            <th>Priority</th>
+                            <th>Status</th>
+                            <th>Last Hearing</th>
+                            <th>Next Hearing</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="cases-tbody"></tbody>
+                </table>
+            </div>
+
+            <div class="loading-spinner" id="loading-spinner">
+                <div class="spinner"></div>
+                <p>Loading pending cases...</p>
+            </div>
+
+            <div class="no-cases" id="no-cases" style="display: none;">
+                <i class="fas fa-check-circle"></i>
+                <h3>No pending cases found</h3>
+                <p>Great work — all cases are moving forward.</p>
+            </div>
+        </main>
+    </div>
+
+    <div class="modal" id="case-modal">
+        <div class="modal-content large-modal">
+            <div class="modal-header">
+                <h2><i class="fas fa-file-alt"></i> Case Details</h2>
+                <button class="close-btn" onclick="closeModal()"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="modal-body" id="case-details"></div>
+            <div class="modal-footer">
+                <button class="btn-secondary" onclick="closeModal()">Close</button>
+                <button class="btn-primary" onclick="openStatusModal()">Update Status</button>
             </div>
         </div>
-    </aside>
+    </div>
 
-    <main class="main-content">
-        <header class="top-bar">
-            <div class="search-box">
-                <i class="fas fa-search"></i>
-                <input id="caseSearchInput" type="text" placeholder="Search by Case ID...">
+    <div class="modal" id="status-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2><i class="fas fa-edit"></i> Update Case Status</h2>
+                <button class="close-btn" onclick="closeStatusModal()"><i class="fas fa-times"></i></button>
             </div>
-            <div class="header-actions">
-                <div class="live-status"><span class="pulse"></span> Pending Queue</div>
-                <button class="refresh-btn" onclick="window.location.href='judge-dashboard.html'">
-                    <i class="fas fa-arrow-left"></i> Back To Dashboard
-                </button>
-                <button class="refresh-btn" onclick="window.location.reload()">
-                    <i class="fas fa-sync-alt"></i> Refresh
-                </button>
+            <div class="modal-body">
+                <form id="status-form">
+                    <div class="form-group">
+                        <label for="new-status">New Status:</label>
+                        <select id="new-status" required>
+                            <option value="pending">Pending</option>
+                            <option value="in-progress">In Progress</option>
+                            <option value="completed">Completed</option>
+                            <option value="postponed">Postponed</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="status-notes">Notes:</label>
+                        <textarea id="status-notes" rows="3" placeholder="Add notes..."></textarea>
+                    </div>
+                </form>
             </div>
-        </header>
-
-        <section class="dashboard-header">
-            <h2>Pending Cases Not Listed On Judge Dashboard</h2>
-            <p>This section shows pending cases that are currently outside the active dashboard batch.</p>
-        </section>
-
-        <section class="reports-wrapper">
-            <article class="report-section">
-                <h3>Pending Outside Dashboard</h3>
-                <div id="pendingOutsideList" class="report-list"></div>
-            </article>
-        </section>
-
-        <footer class="np-footer">
-            <div class="footer-primary-links">
-                <div class="footer-grid">
-
-                    <div class="footer-col">
-                        <ul>
-                            <li><a href="footer/ai-case-search.html" target="_blank" rel="noopener noreferrer">AI Case
-                                    Search</a></li>
-                            <li><a href="footer/faq-user-guides.html" target="_blank" rel="noopener noreferrer">FAQ /
-                                    User Guides</a></li>
-                            <li><a href="footer/service-status.html" target="_blank" rel="noopener noreferrer">Service
-                                    Status</a></li>
-                            <li><a href="footer/developer-api.html" target="_blank" rel="noopener noreferrer">Developer
-                                    API</a></li>
-                        </ul>
-                    </div>
-
-                    <div class="footer-col">
-                        <ul>
-                            <li><a href="footer/privacy-policy.html" target="_blank" rel="noopener noreferrer">Privacy
-                                    Policy</a></li>
-                            <li><a href="footer/data-handling-protocol.html" target="_blank"
-                                    rel="noopener noreferrer">Data Handling Protocol</a></li>
-                            <li><a href="footer/feedback-portal.html" target="_blank" rel="noopener noreferrer">Feedback
-                                    Portal</a></li>
-                            <li><a href="footer/accessibility.html" target="_blank"
-                                    rel="noopener noreferrer">Accessibility</a></li>
-                        </ul>
-                    </div>
-
-                    <div class="footer-col">
-                        <ul>
-                            <li><a href="footer/about-nav-pravah.html" target="_blank" rel="noopener noreferrer">About
-                                    Nav Pravah</a></li>
-                            <li><a href="footer/team-code-dazzlers.html" target="_blank" rel="noopener noreferrer">The
-                                    Team (Code Dazzlers)</a></li>
-                            <li><a href="footer/technology-stack.html" target="_blank"
-                                    rel="noopener noreferrer">Technology Stack</a></li>
-                            <li><a href="footer/mherm-hackathon-26.html" target="_blank" rel="noopener noreferrer">MHERM
-                                    Hackathon '26</a></li>
-                        </ul>
-                    </div>
-
-                    <div class="footer-col footer-app-download">
-                        <div class="app-card">
-                            <img src="../asset/logo/mainlogo.jpeg" alt="Nav Pravah Logo" class="footer-logo">
-                            <p>NAV PRAVAH</p>
-                            <span class="tagline">Justice. Accelerated.</span>
-                        </div>
-                    </div>
-                </div>
+            <div class="modal-footer">
+                <button class="btn-secondary" onclick="closeStatusModal()">Cancel</button>
+                <button class="btn-primary" onclick="submitStatusUpdate()">Update</button>
             </div>
+        </div>
+    </div>
 
-            <div class="footer-secondary-info">
-                <div class="policy-links">
-                    <a href="footer/website-policies.html" target="_blank" rel="noopener noreferrer">Website
-                        Policies</a> |
-                    <a href="footer/contact-us.html" target="_blank" rel="noopener noreferrer">Contact Us</a> |
-                    <a href="footer/help.html" target="_blank" rel="noopener noreferrer">Help</a> |
-                    <a href="footer/disclaimer.html" target="_blank" rel="noopener noreferrer">Disclaimer</a>
-                </div>
-
-                <div class="copyright-text">
-                    <p>Content Managed & Maintained by **Code Dazzlers**.</p>
-                    <p>Built for the **MHERM Hackathon 2026**.</p>
-                    <p>Last Data Update: March 19, 2026</p>
-                </div>
-
-                <div class="partner-logos">
-                    <span class="mherm-badge">MHERM '26</span>
-                </div>
-            </div>
-        </footer>
-    </main>
-
-    <script src="../scripts/dashboard.js"></script>
-    <script src="../scripts/judge-reports.js"></script>
-    <script>
-        const logoutBtn = document.getElementById('logoutBtn');
-        if (logoutBtn) {
-            logoutBtn.addEventListener('click', (event) => {
-                event.preventDefault();
-                const shouldLogout = confirm('Do you want to logout?');
-                if (shouldLogout) {
-                    window.location.href = 'index.html';
-                }
-            });
-        }
-    </script>
+    <script src="../scripts/pending-cases.js"></script>
 </body>
 
 </html>

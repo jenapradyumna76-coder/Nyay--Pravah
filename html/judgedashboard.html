@@ -9,7 +9,6 @@
     <link rel="stylesheet" href="../styles/layout.css">
     <link rel="stylesheet" href="../styles/components.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 
 <body>
@@ -22,20 +21,22 @@
             <span class="sidebar-logo-text">NYAY PRAVAH</span>
         </div>
         <nav class="menu">
-            <a href="#" class="menu-tab active" data-tab="overview"><i class="fas fa-columns"></i> Overview</a>
-            <a href="#" class="menu-tab" data-tab="cases"><i class="fas fa-folder-open"></i> Cases</a>
-            <a href="#" class="menu-tab" data-tab="analytics"><i class="fas fa-chart-line"></i> Analytics</a>
-            <a href="#" class="menu-tab" data-tab="documents"><i class="fas fa-file-upload"></i> Documents</a>
-            <a href="#" class="menu-tab" data-tab="notifications"><i class="fas fa-bell"></i> Alerts</a>
-            <a href="#" class="menu-tab" data-tab="profile"><i class="fas fa-user-cog"></i> Profile</a>
+            <a href="judgedashboard.html" class="active"><i class="fas fa-columns"></i> Dashboard</a>
+            <a href="judge-manual-requests.html"><i class="fas fa-user-check"></i> Manual Requests</a>
+            <a href="judge-today-cases.html"><i class="fas fa-calendar-day"></i> Today Cases</a>
+            <a href="judge-all-cases.html"><i class="fas fa-folder-open"></i> All Cases</a>
+            <a href="judge-pending-cases.html"><i class="fas fa-clock"></i> Pending Cases</a>
+            <a href="judge-adjoined-cases.html"><i class="fas fa-check-circle"></i> Adjoined Cases</a>
+            <a href="judge-analytics.html"><i class="fas fa-chart-line"></i> Analytics</a>
+            <a href="judge-profile.html"><i class="fas fa-user-circle"></i> Profile</a>
             <div class="divider"></div>
             <a href="#" id="logoutBtn"><i class="fas fa-sign-out-alt"></i> Logout</a>
         </nav>
         <div class="user-profile">
-            <div id="judgeAvatar" class="avatar">JD</div>
+            <div class="avatar">HH</div>
             <div class="info">
-                <strong id="judgeDisplayName">Hon. Judge</strong>
-                <span id="judgeMeta">Secure Session</span>
+                <strong>Hon. Judge</strong>
+                <span>Courtroom 04</span>
             </div>
         </div>
     </aside>
@@ -57,233 +58,56 @@
             </div>
         </header>
 
-        <!-- TAB: OVERVIEW -->
-        <section id="tab-overview" class="tab-content active">
-            <section class="dashboard-header">
-                <h2>Daily Cause List Balance</h2>
-                <div class="balance-meter">
-                    <div class="track">
-                        <div class="segment backlog-seg" style="width: 50%;">0 BACKLOG</div>
-                        <div class="segment fresh-seg" style="width: 50%;">0 FRESH</div>
-                    </div>
-                </div>
-            </section>
-
-            <div class="split-grid">
-                <div class="pane backlog-pane">
-                    <div class="pane-title">
-                        <i class="fas fa-exclamation-triangle"></i> Priority Backlog
-                    </div>
-                    <div id="backlog-list" class="case-list">
-                    </div>
-                </div>
-
-                <div class="pane fresh-pane">
-                    <div class="pane-title">
-                        <i class="fas fa-leaf"></i> Fresh Filings
-                    </div>
-                    <div id="fresh-list" class="case-list">
-                    </div>
+        <section class="dashboard-header">
+            <h2>Daily Cause List Balance</h2>
+            <div class="balance-meter">
+                <div class="track">
+                    <div class="segment backlog-seg" style="width: 50%;">0 BACKLOG</div>
+                    <div class="segment fresh-seg" style="width: 50%;">0 FRESH</div>
                 </div>
             </div>
         </section>
 
-        <!-- TAB: CASE MANAGEMENT -->
-        <section id="tab-cases" class="tab-content">
-            <div class="tab-header">
-                <h2>Case Management</h2>
-                <div class="filter-controls">
-                    <input type="text" id="caseFilterInput" placeholder="Search by Case ID or parties..." class="filter-input">
-                    <select id="caseStatusFilter" class="filter-select">
-                        <option value="">All Statuses</option>
-                        <option value="pending">Pending</option>
-                        <option value="active">Active</option>
-                        <option value="closed">Closed</option>
-                        <option value="adjourned">Adjourned</option>
-                    </select>
+        <div class="split-grid">
+            <div class="pane priority-pane">
+                <div class="pane-title">
+                    <i class="fas fa-exclamation-triangle"></i> Priority Cases
+                    <span class="case-count" id="priority-count">0</span>
                 </div>
-            </div>
-            <div id="cases-list" class="cases-table-container">
-                <table class="cases-table">
-                    <thead>
-                        <tr>
-                            <th>Case ID</th>
-                            <th>Case Name</th>
-                            <th>Status</th>
-                            <th>Next Hearing</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody id="cases-tbody">
-                        <tr><td colspan="5" style="text-align: center; padding: 20px; color: #999;">No cases assigned yet</td></tr>
-                    </tbody>
-                </table>
-            </div>
-        </section>
-
-        <!-- TAB: ANALYTICS -->
-        <section id="tab-analytics" class="tab-content">
-            <div class="tab-header">
-                <h2>Case Analytics & Performance</h2>
-            </div>
-            <div class="analytics-grid">
-                <div class="stat-card">
-                    <div class="stat-icon" style="background: #e3f2fd;">
-                        <i class="fas fa-briefcase"></i>
+                <div class="priority-sections">
+                    <div class="priority-section">
+                        <h4 class="priority-header urgent-header">
+                            <i class="fas fa-fire"></i> Urgent
+                            <span class="priority-count" id="urgent-count">0</span>
+                        </h4>
+                        <div id="urgent-cases" class="case-list"></div>
                     </div>
-                    <div class="stat-content">
-                        <div class="stat-label">Total Cases</div>
-                        <div class="stat-value" id="stat-total-cases">0</div>
+                    <div class="priority-section">
+                        <h4 class="priority-header high-header">
+                            <i class="fas fa-arrow-up"></i> High Priority
+                            <span class="priority-count" id="high-count">0</span>
+                        </h4>
+                        <div id="high-cases" class="case-list"></div>
                     </div>
-                </div>
-
-                <div class="stat-card">
-                    <div class="stat-icon" style="background: #fff3e0;">
-                        <i class="fas fa-clock"></i>
-                    </div>
-                    <div class="stat-content">
-                        <div class="stat-label">Pending Cases</div>
-                        <div class="stat-value" id="stat-pending-cases">0</div>
-                    </div>
-                </div>
-
-                <div class="stat-card">
-                    <div class="stat-icon" style="background: #e8f5e9;">
-                        <i class="fas fa-check-circle"></i>
-                    </div>
-                    <div class="stat-content">
-                        <div class="stat-label">Closed Cases</div>
-                        <div class="stat-value" id="stat-closed-cases">0</div>
-                    </div>
-                </div>
-
-                <div class="stat-card">
-                    <div class="stat-icon" style="background: #f3e5f5;">
-                        <i class="fas fa-percentage"></i>
-                    </div>
-                    <div class="stat-content">
-                        <div class="stat-label">Closure Rate</div>
-                        <div class="stat-value" id="stat-closure-rate">0%</div>
+                    <div class="priority-section">
+                        <h4 class="priority-header medium-header">
+                            <i class="fas fa-minus"></i> Medium Priority
+                            <span class="priority-count" id="medium-count">0</span>
+                        </h4>
+                        <div id="medium-cases" class="case-list"></div>
                     </div>
                 </div>
             </div>
 
-            <div class="chart-section">
-                <h3>Case Status Distribution</h3>
-                <div id="status-chart" style="background: #f5f5f5; padding: 20px; border-radius: 8px; text-align: center; color: #999;">
-                    Chart will load with case data
+            <div class="pane fresh-pane">
+                <div class="pane-title">
+                    <i class="fas fa-leaf"></i> Fresh Cases
+                    <span class="case-count" id="fresh-count">0</span>
+                </div>
+                <div id="fresh-cases" class="case-list">
                 </div>
             </div>
-        </section>
-
-        <!-- TAB: DOCUMENTS -->
-        <section id="tab-documents" class="tab-content">
-            <div class="tab-header">
-                <h2>Document Management</h2>
-                <button id="uploadDocBtn" class="primary-btn" style="margin-top: 0;">
-                    <i class="fas fa-cloud-upload-alt"></i> Upload Document
-                </button>
-            </div>
-
-            <div class="documents-container">
-                <div class="upload-area" id="uploadArea">
-                    <i class="fas fa-cloud-upload-alt" style="font-size: 48px; color: #166edb; margin-bottom: 10px;"></i>
-                    <p>Drag documents here or click to upload</p>
-                    <input type="file" id="fileInput" multiple style="display: none;">
-                </div>
-
-                <div id="documents-list" class="documents-list">
-                    <div style="text-align: center; padding: 20px; color: #999;">
-                        No documents uploaded yet
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- TAB: NOTIFICATIONS/ALERTS -->
-        <section id="tab-notifications" class="tab-content">
-            <div class="tab-header">
-                <h2>Notifications & Alerts</h2>
-                <button id="clearAlertsBtn" class="secondary-btn" style="margin-top: 0;">Clear All</button>
-            </div>
-
-            <div id="notifications-list" class="notifications-list">
-                <div class="notification-item">
-                    <div class="notification-icon" style="background: #e3f2fd;">
-                        <i class="fas fa-info-circle"></i>
-                    </div>
-                    <div class="notification-content">
-                        <div class="notification-title">Welcome to Dashboard</div>
-                        <div class="notification-message">Your judge account is now active and ready to use.</div>
-                        <div class="notification-time">Today</div>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- TAB: PROFILE SETTINGS -->
-        <section id="tab-profile" class="tab-content">
-            <div class="tab-header">
-                <h2>Profile & Settings</h2>
-            </div>
-
-            <div class="profile-container">
-                <div class="profile-card">
-                    <h3>Personal Information</h3>
-                    <div class="profile-section">
-                        <div class="profile-field">
-                            <label>Full Name</label>
-                            <input type="text" id="profile-name" readonly disabled class="form-input">
-                        </div>
-                        <div class="profile-field">
-                            <label>Email Address</label>
-                            <input type="email" id="profile-email" readonly disabled class="form-input">
-                        </div>
-                        <div class="profile-field">
-                            <label>License Number</label>
-                            <input type="text" id="profile-license" readonly disabled class="form-input">
-                        </div>
-                    </div>
-                </div>
-
-                <div class="profile-card">
-                    <h3>Security Settings</h3>
-                    <div class="profile-section">
-                        <button id="changePasswordBtn" class="primary-btn">
-                            <i class="fas fa-key"></i> Change Password
-                        </button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Change Password Modal -->
-            <div id="passwordModal" class="modal">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h3>Change Password</h3>
-                        <button class="close-btn">&times;</button>
-                    </div>
-                    <div class="modal-body">
-                        <div class="form-field">
-                            <label>Current Password</label>
-                            <input type="password" id="currentPassword" placeholder="Enter current password" class="form-input">
-                        </div>
-                        <div class="form-field">
-                            <label>New Password</label>
-                            <input type="password" id="newPassword" placeholder="Enter new password" class="form-input">
-                        </div>
-                        <div class="form-field">
-                            <label>Confirm New Password</label>
-                            <input type="password" id="confirmPassword" placeholder="Confirm new password" class="form-input">
-                        </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button class="secondary-btn close-modal-btn">Cancel</button>
-                        <button id="submitPasswordBtn" class="primary-btn">Update Password</button>
-                    </div>
-                </div>
-            </div>
-        </section>
+        </div>
 
 
         <!-- [Section] Primary informational footer with legal, product, and support links -->
@@ -367,528 +191,19 @@
         <span>Evidence Uploaded for Case #204</span>
         <button onclick="location.reload()">Update</button>
     </div>
+    <script src="../scripts/dashboard.js"></script>
     <script>
-        const SUPABASE_URL = 'https://hwvflwartrxmazzjypbp.supabase.co';
-        const SUPABASE_ANON_KEY = 'sb_publishable_aHsV710290uB_VKb-mcSvg_b0IO3aEO';
-        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-
-        let currentUser = null;
-        let currentProfile = null;
-
-        // ===== TAB NAVIGATION =====
-        document.querySelectorAll('.menu-tab').forEach(tab => {
-            tab.addEventListener('click', (e) => {
-                e.preventDefault();
-                const tabName = tab.getAttribute('data-tab');
-                switchTab(tabName);
-            });
-        });
-
-        function switchTab(tabName) {
-            document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
-            document.getElementById(`tab-${tabName}`).classList.add('active');
-            
-            document.querySelectorAll('.menu-tab').forEach(tab => tab.classList.remove('active'));
-            document.querySelector(`[data-tab="${tabName}"]`).classList.add('active');
-        }
-
-        // ===== AUTHENTICATION & PROFILE =====
         const logoutBtn = document.getElementById('logoutBtn');
-        const judgeDisplayName = document.getElementById('judgeDisplayName');
-        const judgeMeta = document.getElementById('judgeMeta');
-        const judgeAvatar = document.getElementById('judgeAvatar');
-
-        function redirectToJudgeLogin() {
-            window.location.replace('./judgelogin.html');
-        }
-
-        function initialsFromName(name) {
-            const parts = (name || '').trim().split(/\s+/).filter(Boolean);
-            if (parts.length === 0) {
-                return 'JD';
-            }
-            return parts.slice(0, 2).map((part) => part[0].toUpperCase()).join('');
-        }
-
-        async function guardJudgeDashboard() {
-            const { data: sessionData, error: sessionError } = await supabaseClient.auth.getSession();
-            if (sessionError || !sessionData?.session) {
-                redirectToJudgeLogin();
-                return;
-            }
-
-            const user = sessionData.session.user;
-            if (!user?.id) {
-                redirectToJudgeLogin();
-                return;
-            }
-
-            const { data: profile, error: profileError } = await supabaseClient
-                .from('judge_profiles')
-                .select('id, full_name, email, license_no, role')
-                .eq('id', user.id)
-                .maybeSingle();
-
-            if (profileError || !profile) {
-                await supabaseClient.auth.signOut({ scope: 'local' });
-                alert('Your session is invalid for judge dashboard access. Please login again.');
-                redirectToJudgeLogin();
-                return;
-            }
-
-            if ((profile.role || '').toLowerCase() !== 'judge') {
-                await supabaseClient.auth.signOut({ scope: 'local' });
-                alert('Access denied. Judge dashboard is restricted to judge accounts only.');
-                redirectToJudgeLogin();
-                return;
-            }
-
-            currentUser = user;
-            currentProfile = profile;
-            
-            const fullName = profile.full_name || 'Hon. Judge';
-            judgeDisplayName.textContent = fullName;
-            judgeAvatar.textContent = initialsFromName(fullName);
-            judgeMeta.textContent = `License: ${profile.license_no || 'Not Available'}`;
-
-            loadProfileData();
-        }
-
-        // ===== PROFILE SETTINGS =====
-        function loadProfileData() {
-            if (currentProfile) {
-                document.getElementById('profile-name').value = currentProfile.full_name || '';
-                document.getElementById('profile-email').value = currentProfile.email || '';
-                document.getElementById('profile-license').value = currentProfile.license_no || '';
-            }
-        }
-
-        const changePasswordBtn = document.getElementById('changePasswordBtn');
-        const passwordModal = document.getElementById('passwordModal');
-        const closeModalBtn = passwordModal.querySelector('.close-btn');
-        const closeModalBtn2 = passwordModal.querySelector('.close-modal-btn');
-        const submitPasswordBtn = document.getElementById('submitPasswordBtn');
-
-        changePasswordBtn.addEventListener('click', () => {
-            passwordModal.style.display = 'flex';
-        });
-
-        closeModalBtn.addEventListener('click', () => {
-            passwordModal.style.display = 'none';
-        });
-
-        closeModalBtn2.addEventListener('click', () => {
-            passwordModal.style.display = 'none';
-        });
-
-        passwordModal.addEventListener('click', (e) => {
-            if (e.target === passwordModal) {
-                passwordModal.style.display = 'none';
-            }
-        });
-
-        submitPasswordBtn.addEventListener('click', async () => {
-            const currentPassword = document.getElementById('currentPassword').value;
-            const newPassword = document.getElementById('newPassword').value;
-            const confirmPassword = document.getElementById('confirmPassword').value;
-
-            if (!currentPassword || !newPassword || !confirmPassword) {
-                alert('Please fill all password fields.');
-                return;
-            }
-
-            if (newPassword !== confirmPassword) {
-                alert('New passwords do not match.');
-                return;
-            }
-
-            if (newPassword.length < 6) {
-                alert('New password must be at least 6 characters.');
-                return;
-            }
-
-            try {
-                const { error } = await supabaseClient.auth.updateUser({ password: newPassword });
-                if (error) throw error;
-
-                alert('Password updated successfully!');
-                passwordModal.style.display = 'none';
-                document.getElementById('currentPassword').value = '';
-                document.getElementById('newPassword').value = '';
-                document.getElementById('confirmPassword').value = '';
-            } catch (err) {
-                alert('Error updating password: ' + err.message);
-            }
-        });
-
-        // ===== DOCUMENT UPLOAD =====
-        const uploadArea = document.getElementById('uploadArea');
-        const fileInput = document.getElementById('fileInput');
-        const uploadDocBtn = document.getElementById('uploadDocBtn');
-        const documentsList = document.getElementById('documents-list');
-
-        uploadDocBtn.addEventListener('click', () => fileInput.click());
-
-        uploadArea.addEventListener('click', () => fileInput.click());
-        uploadArea.addEventListener('dragover', (e) => {
-            e.preventDefault();
-            uploadArea.style.background = '#f0f0f0';
-        });
-        uploadArea.addEventListener('dragleave', () => {
-            uploadArea.style.background = '#fff';
-        });
-        uploadArea.addEventListener('drop', (e) => {
-            e.preventDefault();
-            uploadArea.style.background = '#fff';
-            handleFiles(e.dataTransfer.files);
-        });
-
-        fileInput.addEventListener('change', (e) => {
-            handleFiles(e.target.files);
-        });
-
-        function handleFiles(files) {
-            Array.from(files).forEach(file => {
-                const docItem = document.createElement('div');
-                docItem.className = 'document-item';
-                docItem.innerHTML = `
-                    <div class="doc-icon"><i class="fas fa-file"></i></div>
-                    <div class="doc-info">
-                        <div class="doc-name">${file.name}</div>
-                        <div class="doc-size">${(file.size / 1024).toFixed(2)} KB</div>
-                    </div>
-                    <button class="delete-doc-btn" onclick="this.parentElement.remove();">
-                        <i class="fas fa-trash"></i>
-                    </button>
-                `;
-                documentsList.appendChild(docItem);
+        if (logoutBtn) {
+            logoutBtn.addEventListener('click', (event) => {
+                event.preventDefault();
+                const shouldLogout = confirm('Do you want to logout?');
+                if (shouldLogout) {
+                    window.location.href = 'index.html';
+                }
             });
         }
-
-        // ===== LOGOUT =====
-        logoutBtn.addEventListener('click', async (event) => {
-            event.preventDefault();
-            const shouldLogout = confirm('Do you want to logout?');
-            if (shouldLogout) {
-                await supabaseClient.auth.signOut({ scope: 'local' });
-                window.location.href = 'judgelogin.html';
-            }
-        });
-
-        // Initialize dashboard
-        guardJudgeDashboard();
     </script>
-
-    <style>
-        .tab-content {
-            display: none;
-            animation: fadeIn 0.3s ease-in;
-        }
-        .tab-content.active {
-            display: block;
-        }
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-        .tab-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-        }
-        .filter-controls {
-            display: flex;
-            gap: 10px;
-        }
-        .filter-input, .filter-select {
-            padding: 8px 12px;
-            border: 1px solid #ddd;
-            border-radius: 6px;
-            font-size: 14px;
-        }
-        .analytics-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 15px;
-            margin-bottom: 30px;
-        }
-        .stat-card {
-            display: flex;
-            gap: 15px;
-            padding: 15px;
-            background: #fff;
-            border: 1px solid #eee;
-            border-radius: 8px;
-            align-items: center;
-        }
-        .stat-icon {
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 24px;
-            color: #166edb;
-        }
-        .stat-label {
-            font-size: 12px;
-            color: #999;
-            text-transform: uppercase;
-        }
-        .stat-value {
-            font-size: 28px;
-            font-weight: bold;
-            color: #1f2937;
-        }
-        .chart-section {
-            background: #fff;
-            padding: 20px;
-            border-radius: 8px;
-            border: 1px solid #eee;
-        }
-        .cases-table-container {
-            background: #fff;
-            border-radius: 8px;
-            overflow-x: auto;
-        }
-        .cases-table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-        .cases-table thead {
-            background: #f5f5f5;
-            border-bottom: 2px solid #eee;
-        }
-        .cases-table th {
-            padding: 12px;
-            text-align: left;
-            font-weight: 600;
-            color: #333;
-        }
-        .cases-table td {
-            padding: 12px;
-            border-bottom: 1px solid #eee;
-        }
-        .documents-container {
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-        }
-        .upload-area {
-            border: 2px dashed #ddd;
-            border-radius: 8px;
-            padding: 40px;
-            text-align: center;
-            cursor: pointer;
-            background: #fafafa;
-            transition: all 0.3s;
-        }
-        .upload-area:hover {
-            border-color: #166edb;
-            background: #f0f8ff;
-        }
-        .documents-list {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
-        .document-item {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            padding: 12px;
-            background: #fff;
-            border: 1px solid #eee;
-            border-radius: 6px;
-        }
-        .doc-icon {
-            font-size: 24px;
-            color: #166edb;
-            width: 40px;
-        }
-        .doc-info {
-            flex: 1;
-        }
-        .doc-name {
-            font-weight: 500;
-            color: #333;
-        }
-        .doc-size {
-            font-size: 12px;
-            color: #999;
-        }
-        .delete-doc-btn {
-            background: none;
-            border: none;
-            color: #999;
-            cursor: pointer;
-            font-size: 16px;
-        }
-        .delete-doc-btn:hover {
-            color: #e74c3c;
-        }
-        .notifications-list {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
-        .notification-item {
-            display: flex;
-            gap: 15px;
-            padding: 15px;
-            background: #fff;
-            border: 1px solid #eee;
-            border-radius: 6px;
-            border-left: 4px solid #166edb;
-        }
-        .notification-icon {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #166edb;
-        }
-        .notification-content {
-            flex: 1;
-        }
-        .notification-title {
-            font-weight: 600;
-            color: #333;
-        }
-        .notification-message {
-            font-size: 14px;
-            color: #666;
-            margin-top: 5px;
-        }
-        .notification-time {
-            font-size: 12px;
-            color: #999;
-            margin-top: 8px;
-        }
-        .profile-container {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 20px;
-        }
-        .profile-card {
-            background: #fff;
-            padding: 20px;
-            border-radius: 8px;
-            border: 1px solid #eee;
-        }
-        .profile-section {
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-        }
-        .profile-field {
-            display: flex;
-            flex-direction: column;
-            gap: 5px;
-        }
-        .profile-field label {
-            font-weight: 500;
-            color: #333;
-            font-size: 14px;
-        }
-        .form-input {
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 6px;
-            font-size: 14px;
-        }
-        .form-field {
-            margin-bottom: 15px;
-        }
-        .form-field label {
-            display: block;
-            margin-bottom: 5px;
-            font-weight: 500;
-            color: #333;
-        }
-        .form-field input {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 6px;
-            font-size: 14px;
-        }
-        .modal {
-            display: none;
-            position: fixed;
-            z-index: 1000;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.5);
-            align-items: center;
-            justify-content: center;
-        }
-        .modal-content {
-            background-color: #fff;
-            padding: 0;
-            border-radius: 8px;
-            width: 90%;
-            max-width: 500px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        }
-        .modal-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 20px;
-            border-bottom: 1px solid #eee;
-        }
-        .modal-header h3 {
-            margin: 0;
-        }
-        .close-btn {
-            background: none;
-            border: none;
-            font-size: 24px;
-            cursor: pointer;
-            color: #999;
-        }
-        .modal-body {
-            padding: 20px;
-        }
-        .modal-footer {
-            display: flex;
-            gap: 10px;
-            justify-content: flex-end;
-            padding: 20px;
-            border-top: 1px solid #eee;
-        }
-        .primary-btn {
-            padding: 10px 20px;
-            background: #166edb;
-            color: white;
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
-            font-weight: 500;
-        }
-        .primary-btn:hover {
-            background: #1158c7;
-        }
-        .secondary-btn {
-            padding: 10px 20px;
-            background: #e0e0e0;
-            color: #333;
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
-            font-weight: 500;
-        }
-        .secondary-btn:hover {
-            background: #d0d0d0;
-        }
-    </style>
 </body>
 
 </html>

@@ -9,44 +9,6 @@
     <link rel="stylesheet" href="../styles/layout.css">
     <link rel="stylesheet" href="../styles/components.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <style>
-        .profile-layout {
-            display: grid;
-            gap: 1rem;
-            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-        }
-
-        .profile-photo {
-            width: 11rem;
-            height: 11rem;
-            border-radius: 12px;
-            object-fit: cover;
-            border: 1px solid rgba(33, 96, 172, 0.3);
-            margin-bottom: 0.8rem;
-        }
-
-        .profile-label {
-            font-weight: 700;
-            color: #10315c;
-            margin-right: 0.4rem;
-        }
-
-        .profile-desc-input {
-            width: 100%;
-            min-height: 7rem;
-            border: 1px solid rgba(33, 96, 172, 0.3);
-            border-radius: 10px;
-            padding: 0.65rem;
-            resize: vertical;
-            font-family: inherit;
-        }
-
-        .profile-save-message {
-            margin-top: 0.6rem;
-            color: #1a4a82;
-            font-weight: 600;
-        }
-    </style>
 </head>
 
 <body>
@@ -59,7 +21,7 @@
             <span class="sidebar-logo-text">NYAY PRAVAH</span>
         </div>
         <nav class="menu">
-            <a href="judge-dashboard.html"><i class="fas fa-columns"></i> Dashboard</a>
+            <a href="judgedashboard.html"><i class="fas fa-columns"></i> Dashboard</a>
             <a href="judge-manual-requests.html"><i class="fas fa-user-check"></i> Manual Requests</a>
             <a href="judge-today-cases.html"><i class="fas fa-calendar-day"></i> Today Cases</a>
             <a href="judge-all-cases.html"><i class="fas fa-folder-open"></i> All Cases</a>
@@ -81,50 +43,320 @@
 
     <main class="main-content">
         <header class="top-bar">
-            <div class="search-box">
-                <i class="fas fa-id-badge"></i>
-                <input type="text" value="Judge Profile" readonly>
+            <div class="page-title">
+                <h1><i class="fas fa-user-circle"></i> Judge Profile</h1>
             </div>
             <div class="header-actions">
-                <button class="refresh-btn" onclick="window.location.href='judge-dashboard.html'">
-                    <i class="fas fa-arrow-left"></i> Back To Dashboard
+                <button class="refresh-btn" onclick="loadProfile()">
+                    <i class="fas fa-sync-alt"></i> Refresh
                 </button>
             </div>
         </header>
 
-        <section class="reports-wrapper">
-            <article class="report-section">
-                <h3>Profile Details</h3>
-                <div class="profile-layout">
-                    <div class="report-card">
-                        <img id="profile-photo" class="profile-photo" src="../asset/logo/mainlogo.jpeg"
-                            alt="Judge Photo">
-                        <div class="report-card-title" id="profile-name">Hon. Judge</div>
-                        <div class="report-card-meta"><span class="profile-label">Role:</span><span
-                                id="profile-role">Presiding Judge</span></div>
-                        <div class="report-card-meta"><span class="profile-label">Email:</span><span
-                                id="profile-email">-</span></div>
-                        <div class="report-card-meta"><span class="profile-label">Contact:</span><span
-                                id="profile-contact">-</span></div>
-                    </div>
-
-                    <div class="report-card">
-                        <div class="report-card-title">Description (Optional)</div>
-                        <div class="report-card-meta" id="profile-description-text">No description added yet.</div>
-                        <label class="auth-label" for="profile-description-input">Update Description</label>
-                        <textarea id="profile-description-input" class="profile-desc-input"
-                            placeholder="Add profile description (optional)"></textarea>
-                        <button id="save-description-btn" class="auth-submit judge-theme" type="button">Save
-                            Description</button>
-                        <div id="profile-save-message" class="profile-save-message"></div>
+        <div class="profile-container">
+            <!-- Profile Header -->
+            <section class="profile-header">
+                <div class="profile-avatar">
+                    <div class="avatar-large">HH</div>
+                </div>
+                <div class="profile-info">
+                    <h2>Honorable Judge Harshita Sharma</h2>
+                    <p class="designation">District Judge, Civil Court</p>
+                    <div class="profile-stats">
+                        <div class="stat">
+                            <span class="stat-number" id="totalCases">247</span>
+                            <span class="stat-label">Total Cases</span>
+                        </div>
+                        <div class="stat">
+                            <span class="stat-number" id="activeCases">89</span>
+                            <span class="stat-label">Active Cases</span>
+                        </div>
+                        <div class="stat">
+                            <span class="stat-number" id="yearsService">12</span>
+                            <span class="stat-label">Years of Service</span>
+                        </div>
                     </div>
                 </div>
-            </article>
-        </section>
+            </section>
+
+            <!-- Profile Details -->
+            <div class="profile-grid">
+                <div class="profile-section">
+                    <h3><i class="fas fa-user"></i> Personal Information</h3>
+                    <div class="info-grid">
+                        <div class="info-item">
+                            <label>Full Name:</label>
+                            <span>Honorable Judge Harshita Sharma</span>
+                        </div>
+                        <div class="info-item">
+                            <label>Employee ID:</label>
+                            <span>JUD-2024-004</span>
+                        </div>
+                        <div class="info-item">
+                            <label>Date of Birth:</label>
+                            <span>15th March 1982</span>
+                        </div>
+                        <div class="info-item">
+                            <label>Gender:</label>
+                            <span>Female</span>
+                        </div>
+                        <div class="info-item">
+                            <label>Phone:</label>
+                            <span>+91-98765-43210</span>
+                        </div>
+                        <div class="info-item">
+                            <label>Email:</label>
+                            <span>harshita.sharma@nyaypravah.gov.in</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="profile-section">
+                    <h3><i class="fas fa-gavel"></i> Professional Information</h3>
+                    <div class="info-grid">
+                        <div class="info-item">
+                            <label>Designation:</label>
+                            <span>District Judge</span>
+                        </div>
+                        <div class="info-item">
+                            <label>Court:</label>
+                            <span>Civil Court, Courtroom 04</span>
+                        </div>
+                        <div class="info-item">
+                            <label>Jurisdiction:</label>
+                            <span>Civil & Family Matters</span>
+                        </div>
+                        <div class="info-item">
+                            <label>Appointment Date:</label>
+                            <span>1st April 2014</span>
+                        </div>
+                        <div class="info-item">
+                            <label>Bar Council ID:</label>
+                            <span>UP/2010/1234</span>
+                        </div>
+                        <div class="info-item">
+                            <label>Qualification:</label>
+                            <span>LL.M, LL.B (Gold Medalist)</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="profile-section">
+                    <h3><i class="fas fa-chart-line"></i> Performance Metrics</h3>
+                    <div class="metrics-grid">
+                        <div class="metric-card">
+                            <div class="metric-icon">
+                                <i class="fas fa-folder-open"></i>
+                            </div>
+                            <div class="metric-info">
+                                <span class="metric-value" id="casesDisposed">156</span>
+                                <span class="metric-label">Cases Disposed</span>
+                            </div>
+                        </div>
+                        <div class="metric-card">
+                            <div class="metric-icon">
+                                <i class="fas fa-clock"></i>
+                            </div>
+                            <div class="metric-info">
+                                <span class="metric-value" id="avgDisposal">4.2</span>
+                                <span class="metric-label">Avg. Days/Case</span>
+                            </div>
+                        </div>
+                        <div class="metric-card">
+                            <div class="metric-icon">
+                                <i class="fas fa-star"></i>
+                            </div>
+                            <div class="metric-info">
+                                <span class="metric-value" id="satisfaction">4.8</span>
+                                <span class="metric-label">Satisfaction Rate</span>
+                            </div>
+                        </div>
+                        <div class="metric-card">
+                            <div class="metric-icon">
+                                <i class="fas fa-trophy"></i>
+                            </div>
+                            <div class="metric-info">
+                                <span class="metric-value" id="awards">3</span>
+                                <span class="metric-label">Awards Won</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="profile-section">
+                    <h3><i class="fas fa-cog"></i> System Preferences</h3>
+                    <div class="preferences-grid">
+                        <div class="preference-item">
+                            <label for="theme">Theme:</label>
+                            <select id="theme" class="form-input">
+                                <option value="light">Light</option>
+                                <option value="dark">Dark</option>
+                                <option value="auto" selected>Auto</option>
+                            </select>
+                        </div>
+                        <div class="preference-item">
+                            <label for="notifications">Notifications:</label>
+                            <select id="notifications" class="form-input">
+                                <option value="all" selected>All</option>
+                                <option value="important">Important Only</option>
+                                <option value="none">None</option>
+                            </select>
+                        </div>
+                        <div class="preference-item">
+                            <label for="language">Language:</label>
+                            <select id="language" class="form-input">
+                                <option value="en" selected>English</option>
+                                <option value="hi">Hindi</option>
+                            </select>
+                        </div>
+                        <div class="preference-item">
+                            <label for="autoRefresh">Auto Refresh:</label>
+                            <select id="autoRefresh" class="form-input">
+                                <option value="30">30 seconds</option>
+                                <option value="60" selected>1 minute</option>
+                                <option value="300">5 minutes</option>
+                                <option value="0">Manual</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="preference-actions">
+                        <button class="btn btn-primary" onclick="savePreferences()">
+                            <i class="fas fa-save"></i> Save Preferences
+                        </button>
+                        <button class="btn btn-secondary" onclick="resetPreferences()">
+                            <i class="fas fa-undo"></i> Reset to Default
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Activity -->
+            <section class="profile-section full-width">
+                <h3><i class="fas fa-history"></i> Recent Activity</h3>
+                <div class="activity-list" id="activityList">
+                    <div class="activity-item">
+                        <div class="activity-icon">
+                            <i class="fas fa-gavel"></i>
+                        </div>
+                        <div class="activity-content">
+                            <p>Disposed Civil Suit #CS-2024-089</p>
+                            <span class="activity-time">2 hours ago</span>
+                        </div>
+                    </div>
+                    <div class="activity-item">
+                        <div class="activity-icon">
+                            <i class="fas fa-calendar-plus"></i>
+                        </div>
+                        <div class="activity-content">
+                            <p>Scheduled hearing for Family Dispute #FD-2024-045</p>
+                            <span class="activity-time">1 day ago</span>
+                        </div>
+                    </div>
+                    <div class="activity-item">
+                        <div class="activity-icon">
+                            <i class="fas fa-file-alt"></i>
+                        </div>
+                        <div class="activity-content">
+                            <p>Reviewed 12 new case filings</p>
+                            <span class="activity-time">2 days ago</span>
+                        </div>
+                    </div>
+                    <div class="activity-item">
+                        <div class="activity-icon">
+                            <i class="fas fa-award"></i>
+                        </div>
+                        <div class="activity-content">
+                            <p>Received "Excellence in Justice" award</p>
+                            <span class="activity-time">1 week ago</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <!-- [Section] Primary informational footer with legal, product, and support links -->
+        <footer class="np-footer">
+            <div class="footer-primary-links">
+                <div class="footer-grid">
+
+                    <div class="footer-col">
+                        <ul>
+                            <li><a href="footer/ai-case-search.html" target="_blank" rel="noopener noreferrer">AI Case
+                                    Search</a></li>
+                            <li><a href="footer/faq-user-guides.html" target="_blank" rel="noopener noreferrer">FAQ /
+                                    User Guides</a></li>
+                            <li><a href="footer/service-status.html" target="_blank" rel="noopener noreferrer">Service
+                                    Status</a></li>
+                            <li><a href="footer/developer-api.html" target="_blank" rel="noopener noreferrer">Developer
+                                    API</a></li>
+                        </ul>
+                    </div>
+
+                    <div class="footer-col">
+                        <ul>
+                            <li><a href="footer/privacy-policy.html" target="_blank" rel="noopener noreferrer">Privacy
+                                    Policy</a></li>
+                            <li><a href="footer/data-handling-protocol.html" target="_blank"
+                                    rel="noopener noreferrer">Data Handling Protocol</a></li>
+                            <li><a href="footer/feedback-portal.html" target="_blank" rel="noopener noreferrer">Feedback
+                                    Portal</a></li>
+                            <li><a href="footer/accessibility.html" target="_blank"
+                                    rel="noopener noreferrer">Accessibility</a></li>
+                        </ul>
+                    </div>
+
+                    <div class="footer-col">
+                        <ul>
+                            <li><a href="footer/about-nav-pravah.html" target="_blank" rel="noopener noreferrer">About
+                                    Nav Pravah</a></li>
+                            <li><a href="footer/team-code-dazzlers.html" target="_blank" rel="noopener noreferrer">The
+                                    Team (Code Dazzlers)</a></li>
+                            <li><a href="footer/technology-stack.html" target="_blank"
+                                    rel="noopener noreferrer">Technology Stack</a></li>
+                            <li><a href="footer/mherm-hackathon-26.html" target="_blank" rel="noopener noreferrer">MHERM
+                                    Hackathon '26</a></li>
+                        </ul>
+                    </div>
+
+                    <div class="footer-col footer-app-download">
+                        <div class="app-card">
+                            <img src="../asset/logo/mainlogo.jpeg" alt="Nav Pravah Logo" class="footer-logo">
+                            <p>NAV PRAVAH</p>
+                            <span class="tagline">Justice. Accelerated.</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="footer-secondary-info">
+                <div class="policy-links">
+                    <a href="footer/website-policies.html" target="_blank" rel="noopener noreferrer">Website
+                        Policies</a> |
+                    <a href="footer/contact-us.html" target="_blank" rel="noopener noreferrer">Contact Us</a> |
+                    <a href="footer/help.html" target="_blank" rel="noopener noreferrer">Help</a> |
+                    <a href="footer/disclaimer.html" target="_blank" rel="noopener noreferrer">Disclaimer</a>
+                </div>
+
+                <div class="copyright-text">
+                    <p>Content Managed & Maintained by **Code Dazzlers**.</p>
+                    <p>Built for the **MHERM Hackathon 2026**.</p>
+                    <p>Last Data Update: March 19, 2026</p>
+                </div>
+
+                <div class="partner-logos">
+                    <span class="mherm-badge">MHERM '26</span>
+                </div>
+            </div>
+        </footer>
     </main>
 
-    <script src="../scripts/profile.js"></script>
+    <div id="toast" class="toast hidden">
+        <i class="fas fa-bell"></i>
+        <span>Profile updated successfully</span>
+        <button onclick="location.reload()">Update</button>
+    </div>
 
+    <script src="../scripts/profile.js"></script>
     <script>
         const logoutBtn = document.getElementById('logoutBtn');
         if (logoutBtn) {

@@ -4,46 +4,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NYAY PRAVAH | Judge Manual Verification Requests</title>
+    <title>NYAY PRAVAH | Manual Requests</title>
     <link rel="stylesheet" href="../styles/style.css">
     <link rel="stylesheet" href="../styles/layout.css">
     <link rel="stylesheet" href="../styles/components.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <style>
-        .manual-schedule-row {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 0.6rem;
-            margin-top: 0.8rem;
-        }
-
-        .manual-schedule-row label {
-            font-weight: 600;
-        }
-
-        .manual-schedule-input {
-            width: 100%;
-            min-height: 2.7rem;
-            border: 1px solid #d1d5db;
-            border-radius: 8px;
-            padding: 0.45rem 0.6rem;
-        }
-
-        .status-ok {
-            color: #12733d;
-            font-weight: 700;
-        }
-
-        .status-pending {
-            color: #9a6a0a;
-            font-weight: 700;
-        }
-
-        .status-rejected {
-            color: #b91c1c;
-            font-weight: 700;
-        }
-    </style>
 </head>
 
 <body>
@@ -56,7 +21,7 @@
             <span class="sidebar-logo-text">NYAY PRAVAH</span>
         </div>
         <nav class="menu">
-            <a href="judge-dashboard.html"><i class="fas fa-columns"></i> Dashboard</a>
+            <a href="judgedashboard.html"><i class="fas fa-columns"></i> Dashboard</a>
             <a href="judge-manual-requests.html" class="active"><i class="fas fa-user-check"></i> Manual Requests</a>
             <a href="judge-today-cases.html"><i class="fas fa-calendar-day"></i> Today Cases</a>
             <a href="judge-all-cases.html"><i class="fas fa-folder-open"></i> All Cases</a>
@@ -78,42 +43,318 @@
 
     <main class="main-content">
         <header class="top-bar">
-            <div class="search-box">
-                <i class="fas fa-gavel"></i>
-                <input type="text" value="Manual Verification Requests" readonly>
+            <div class="page-title">
+                <h1><i class="fas fa-user-check"></i> Manual Requests</h1>
             </div>
             <div class="header-actions">
-                <button class="refresh-btn" onclick="window.location.reload()">
+                <button class="btn btn-primary" onclick="openNewRequestModal()">
+                    <i class="fas fa-plus"></i> New Request
+                </button>
+                <button class="refresh-btn" onclick="loadRequests()">
                     <i class="fas fa-sync-alt"></i> Refresh
                 </button>
             </div>
         </header>
 
-        <section class="dashboard-header">
-            <h2>Manual Verification Requests</h2>
-            <p>Review lawyer-submitted manual cases, schedule hearing time, and accept to push into dashboard queue.</p>
-        </section>
+        <div class="requests-container">
+            <!-- Request Stats -->
+            <section class="requests-stats">
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-clock"></i>
+                    </div>
+                    <div class="stat-info">
+                        <span class="stat-value" id="pendingRequests">12</span>
+                        <span class="stat-label">Pending</span>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-check-circle"></i>
+                    </div>
+                    <div class="stat-info">
+                        <span class="stat-value" id="approvedRequests">28</span>
+                        <span class="stat-label">Approved</span>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-times-circle"></i>
+                    </div>
+                    <div class="stat-info">
+                        <span class="stat-value" id="rejectedRequests">3</span>
+                        <span class="stat-label">Rejected</span>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-spinner"></i>
+                    </div>
+                    <div class="stat-info">
+                        <span class="stat-value" id="processingRequests">7</span>
+                        <span class="stat-label">Processing</span>
+                    </div>
+                </div>
+            </section>
 
-        <section class="reports-wrapper">
-            <article class="report-section">
-                <h3>Pending Requests</h3>
-                <div id="judgeManualPendingList" class="report-list"></div>
-            </article>
+            <!-- Request Filters -->
+            <section class="requests-filters">
+                <div class="filter-group">
+                    <label for="statusFilter">Status:</label>
+                    <select id="statusFilter" class="form-input" onchange="filterRequests()">
+                        <option value="all">All Requests</option>
+                        <option value="pending">Pending</option>
+                        <option value="processing">Processing</option>
+                        <option value="approved">Approved</option>
+                        <option value="rejected">Rejected</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label for="typeFilter">Type:</label>
+                    <select id="typeFilter" class="form-input" onchange="filterRequests()">
+                        <option value="all">All Types</option>
+                        <option value="case-transfer">Case Transfer</option>
+                        <option value="hearing-postpone">Hearing Postponement</option>
+                        <option value="document-request">Document Request</option>
+                        <option value="witness-summon">Witness Summons</option>
+                        <option value="court-order">Court Order</option>
+                        <option value="administrative">Administrative</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label for="dateFilter">Date Range:</label>
+                    <select id="dateFilter" class="form-input" onchange="filterRequests()">
+                        <option value="all">All Time</option>
+                        <option value="today">Today</option>
+                        <option value="week">This Week</option>
+                        <option value="month">This Month</option>
+                    </select>
+                </div>
+            </section>
 
-            <article class="report-section">
-                <h3>Accepted Requests</h3>
-                <div id="judgeManualAcceptedList" class="report-list"></div>
-            </article>
+            <!-- Requests List -->
+            <section class="requests-list">
+                <div class="requests-header">
+                    <h3>Your Manual Requests</h3>
+                    <span class="requests-count" id="totalRequests">50 total requests</span>
+                </div>
 
-            <article class="report-section">
-                <h3>Rejected Requests</h3>
-                <div id="judgeManualRejectedList" class="report-list"></div>
-            </article>
-        </section>
+                <div class="requests-table-container">
+                    <table class="requests-table">
+                        <thead>
+                            <tr>
+                                <th>Request ID</th>
+                                <th>Type</th>
+                                <th>Subject</th>
+                                <th>Status</th>
+                                <th>Priority</th>
+                                <th>Submitted</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="requestsTableBody">
+                            <!-- Requests will be loaded here -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Pagination -->
+                <div class="pagination">
+                    <button class="btn btn-secondary" id="prevPage" onclick="changePage(-1)" disabled>
+                        <i class="fas fa-chevron-left"></i> Previous
+                    </button>
+                    <span class="page-info">
+                        Page <span id="currentPage">1</span> of <span id="totalPages">5</span>
+                    </span>
+                    <button class="btn btn-secondary" id="nextPage" onclick="changePage(1)">
+                        Next <i class="fas fa-chevron-right"></i>
+                    </button>
+                </div>
+            </section>
+        </div>
+
+        <!-- New Request Modal -->
+        <div id="newRequestModal" class="modal">
+            <div class="modal-dialog">
+                <div class="modal-header">
+                    <h5 class="modal-title">Submit New Manual Request</h5>
+                    <button type="button" class="modal-close" onclick="closeNewRequestModal()">
+                        <span>&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form id="newRequestForm">
+                        <div class="form-group">
+                            <label for="requestType">Request Type *</label>
+                            <select id="requestType" class="form-input" required>
+                                <option value="">Select Request Type</option>
+                                <option value="case-transfer">Case Transfer Request</option>
+                                <option value="hearing-postpone">Hearing Postponement</option>
+                                <option value="document-request">Document Request</option>
+                                <option value="witness-summon">Witness Summons</option>
+                                <option value="court-order">Court Order Amendment</option>
+                                <option value="administrative">Administrative Request</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="requestPriority">Priority Level *</label>
+                            <select id="requestPriority" class="form-input" required>
+                                <option value="low">Low</option>
+                                <option value="medium" selected>Medium</option>
+                                <option value="high">High</option>
+                                <option value="urgent">Urgent</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="caseId">Related Case ID (if applicable)</label>
+                            <input type="text" id="caseId" class="form-input" placeholder="e.g., CS-2024-089">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="requestSubject">Subject *</label>
+                            <input type="text" id="requestSubject" class="form-input" required
+                                   placeholder="Brief description of the request">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="requestDescription">Detailed Description *</label>
+                            <textarea id="requestDescription" class="form-input" rows="4" required
+                                      placeholder="Provide detailed explanation of your request..."></textarea>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="justification">Justification *</label>
+                            <textarea id="justification" class="form-input" rows="3" required
+                                      placeholder="Explain why this request is necessary..."></textarea>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="attachments">Attachments</label>
+                            <input type="file" id="attachments" class="form-input" multiple
+                                   accept=".pdf,.doc,.docx,.jpg,.png">
+                            <small class="form-help">Supported formats: PDF, DOC, DOCX, JPG, PNG (Max 5MB each)</small>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" onclick="closeNewRequestModal()">
+                        Cancel
+                    </button>
+                    <button type="button" class="btn btn-primary" onclick="submitNewRequest()">
+                        <i class="fas fa-paper-plane"></i> Submit Request
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Request Details Modal -->
+        <div id="requestDetailsModal" class="modal">
+            <div class="modal-dialog">
+                <div class="modal-header">
+                    <h5 class="modal-title">Request Details</h5>
+                    <button type="button" class="modal-close" onclick="closeRequestDetailsModal()">
+                        <span>&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body" id="requestDetailsContent">
+                    <!-- Request details will be loaded here -->
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" onclick="closeRequestDetailsModal()">
+                        Close
+                    </button>
+                    <button type="button" class="btn btn-primary" id="editRequestBtn" onclick="editRequest()">
+                        <i class="fas fa-edit"></i> Edit Request
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- [Section] Primary informational footer with legal, product, and support links -->
+        <footer class="np-footer">
+            <div class="footer-primary-links">
+                <div class="footer-grid">
+
+                    <div class="footer-col">
+                        <ul>
+                            <li><a href="footer/ai-case-search.html" target="_blank" rel="noopener noreferrer">AI Case
+                                    Search</a></li>
+                            <li><a href="footer/faq-user-guides.html" target="_blank" rel="noopener noreferrer">FAQ /
+                                    User Guides</a></li>
+                            <li><a href="footer/service-status.html" target="_blank" rel="noopener noreferrer">Service
+                                    Status</a></li>
+                            <li><a href="footer/developer-api.html" target="_blank" rel="noopener noreferrer">Developer
+                                    API</a></li>
+                        </ul>
+                    </div>
+
+                    <div class="footer-col">
+                        <ul>
+                            <li><a href="footer/privacy-policy.html" target="_blank" rel="noopener noreferrer">Privacy
+                                    Policy</a></li>
+                            <li><a href="footer/data-handling-protocol.html" target="_blank"
+                                    rel="noopener noreferrer">Data Handling Protocol</a></li>
+                            <li><a href="footer/feedback-portal.html" target="_blank" rel="noopener noreferrer">Feedback
+                                    Portal</a></li>
+                            <li><a href="footer/accessibility.html" target="_blank"
+                                    rel="noopener noreferrer">Accessibility</a></li>
+                        </ul>
+                    </div>
+
+                    <div class="footer-col">
+                        <ul>
+                            <li><a href="footer/about-nav-pravah.html" target="_blank" rel="noopener noreferrer">About
+                                    Nav Pravah</a></li>
+                            <li><a href="footer/team-code-dazzlers.html" target="_blank" rel="noopener noreferrer">The
+                                    Team (Code Dazzlers)</a></li>
+                            <li><a href="footer/technology-stack.html" target="_blank"
+                                    rel="noopener noreferrer">Technology Stack</a></li>
+                            <li><a href="footer/mherm-hackathon-26.html" target="_blank" rel="noopener noreferrer">MHERM
+                                    Hackathon '26</a></li>
+                        </ul>
+                    </div>
+
+                    <div class="footer-col footer-app-download">
+                        <div class="app-card">
+                            <img src="../asset/logo/mainlogo.jpeg" alt="Nav Pravah Logo" class="footer-logo">
+                            <p>NAV PRAVAH</p>
+                            <span class="tagline">Justice. Accelerated.</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="footer-secondary-info">
+                <div class="policy-links">
+                    <a href="footer/website-policies.html" target="_blank" rel="noopener noreferrer">Website
+                        Policies</a> |
+                    <a href="footer/contact-us.html" target="_blank" rel="noopener noreferrer">Contact Us</a> |
+                    <a href="footer/help.html" target="_blank" rel="noopener noreferrer">Help</a> |
+                    <a href="footer/disclaimer.html" target="_blank" rel="noopener noreferrer">Disclaimer</a>
+                </div>
+
+                <div class="copyright-text">
+                    <p>Content Managed & Maintained by **Code Dazzlers**.</p>
+                    <p>Built for the **MHERM Hackathon 2026**.</p>
+                    <p>Last Data Update: March 19, 2026</p>
+                </div>
+
+                <div class="partner-logos">
+                    <span class="mherm-badge">MHERM '26</span>
+                </div>
+            </div>
+        </footer>
     </main>
 
-    <script src="../scripts/dashboard.js"></script>
-    <script src="../scripts/manual-review.js"></script>
+    <div id="toast" class="toast hidden">
+        <i class="fas fa-bell"></i>
+        <span>Request submitted successfully</span>
+        <button onclick="location.reload()">Update</button>
+    </div>
+
+    <script src="../scripts/manual-requests.js"></script>
     <script>
         const logoutBtn = document.getElementById('logoutBtn');
         if (logoutBtn) {
