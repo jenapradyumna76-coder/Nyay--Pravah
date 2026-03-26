@@ -1,18 +1,19 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lawyer Verification - Nav Pravah</title>
-    <link rel="stylesheet" href="../styles/login.css">
+    <title>Lawyer Verification - NYAY Pravah</title>
+    <link rel="stylesheet" href="./styles/login.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 
 <body>
     <main>
         <div class="tagsection">
             <div id="tag">
-                <p>NAV PRAVHA</p>
+                <p>NYAY PRAVHA</p>
             </div>
             <div id="tagline">
                 <p>&#2344;&#2381;&#2351;&#2366;&#2351; &#2325;&#2366; &#2346;&#2381;&#2352;&#2357;&#2366;&#2361;</p>
@@ -42,21 +43,12 @@
                     <label class="auth-label" for="lawyer-license-no">Enter Your Licence No</label>
                     <input class="auth-input" id="lawyer-license-no" name="licenseNo" type="text" required>
 
-                    <label class="auth-label" for="lawyer-contact-no">Contact Number</label>
-                    <input class="auth-input" id="lawyer-contact-no" name="contactNo" type="tel"
-                        placeholder="10-digit mobile number" required>
-
-                    <label class="auth-label" for="lawyer-photo">Profile Photo</label>
-                    <input class="auth-input file-input" id="lawyer-photo" name="profilePhoto" type="file"
-                        accept="image/*" required>
-
-                    <button id="verifyBtn" class="auth-submit lawyer-theme verify-license-btn" type="submit">Verify Your
-                        Licence To
+                    <button id="verifyBtn" class="auth-submit lawyer-theme verify-license-btn" type="submit">Verify Your Licence To
                         Continue</button>
 
                     <div class="flow-actions">
-                        <button class="secondary-btn back-home-btn" type="button">Back To Home</button>
-                        <button class="secondary-btn back-previous-btn" type="button">Back To Previous</button>
+                        <button id="backHome" class="secondary-btn back-home-btn" type="button">Back To Home</button>
+                        <button id="backPrev" class="secondary-btn back-previous-btn" type="button">Back To Previous</button>
                     </div>
                 </form>
             </div>
@@ -107,7 +99,7 @@
 
                     <div class="footer-col footer-app-download">
                         <div class="app-card">
-                            <img src="../asset/logo/mainlogo.jpeg" alt="Nav Pravah Logo" class="footer-logo">
+                            <img src="./IMG1.jpeg" alt="Nav Pravah Logo" class="footer-logo">
                             <p>NAV PRAVAH</p>
                             <span class="tagline">Justice. Accelerated.</span>
                         </div>
@@ -138,109 +130,100 @@
     </main>
 
     <script>
-        const LAWYER_USERS_KEY = 'nyay_pravah_lawyer_users_v1';
+        // Use a dedicated Supabase project for lawyers to keep data fully isolated from judges.
+        const LAWYER_SUPABASE_URL = 'https://shotgiqungofuoquwpzw.supabase.co';
+        const LAWYER_SUPABASE_ANON_KEY = 'sb_publishable_gmf7zxCsLx4MOKZ-aXMw7Q_alAgKkaQ';
+        const supabaseClient = supabase.createClient(LAWYER_SUPABASE_URL, LAWYER_SUPABASE_ANON_KEY);
+
         const registrationForm = document.getElementById('registrationForm');
         const verifyBtn = document.getElementById('verifyBtn');
 
-        function getLawyerUsers() {
-            try {
-                const value = localStorage.getItem(LAWYER_USERS_KEY);
-                return value ? JSON.parse(value) : [];
-            } catch (error) {
-                console.warn('Could not parse stored lawyer users. Resetting.', error);
-                return [];
-            }
-        }
-
-        function saveLawyerUsers(users) {
-            localStorage.setItem(LAWYER_USERS_KEY, JSON.stringify(users));
-        }
-
-        function readFileAsDataUrl(file) {
-            return new Promise((resolve, reject) => {
-                const reader = new FileReader();
-                reader.onload = () => resolve(reader.result);
-                reader.onerror = () => reject(new Error('Could not read profile photo.'));
-                reader.readAsDataURL(file);
-            });
+        function setVerifyButtonState(isLoading) {
+            verifyBtn.innerText = isLoading ? 'Creating Account...' : 'Verify Your Licence To Continue';
+            verifyBtn.disabled = isLoading;
         }
 
         registrationForm.addEventListener('submit', async (event) => {
             event.preventDefault();
 
             const fullName = document.getElementById('lawyer-full-name').value.trim();
-            const email = document.getElementById('lawyer-email').value.trim().toLowerCase();
+            const email = document.getElementById('lawyer-email').value.trim();
             const password = document.getElementById('lawyer-password').value;
             const confirmPassword = document.getElementById('lawyer-confirm-password').value;
             const licenseNo = document.getElementById('lawyer-license-no').value.trim();
-            const contactNo = document.getElementById('lawyer-contact-no').value.trim();
-            const photoInput = document.getElementById('lawyer-photo');
-            const photoFile = photoInput && photoInput.files ? photoInput.files[0] : null;
 
-            if (!fullName || !email || !password || !licenseNo || !contactNo || !photoFile) {
+            if (!fullName || !email || !password || !confirmPassword || !licenseNo) {
                 alert('Please fill all required fields.');
                 return;
             }
 
-            if (password !== confirmPassword) {
-                alert('Password and confirm password do not match.');
+            if (!/@gmail\.com$/i.test(email)) {
+                alert('Please use a valid Gmail address.');
                 return;
             }
 
-            verifyBtn.innerText = 'Saving Profile...';
-            verifyBtn.disabled = true;
+            if (password.length < 8) {
+                alert('Password must be at least 8 characters long.');
+                return;
+            }
+
+            if (password !== confirmPassword) {
+                alert('Passwords do not match.');
+                return;
+            }
+
+            if (!/^[a-zA-Z0-9]+$/.test(licenseNo)) {
+                alert('Licence number should contain only letters and numbers.');
+                return;
+            }
+
+            setVerifyButtonState(true);
 
             try {
-                const users = getLawyerUsers();
-                const alreadyExists = users.some((user) => user.email === email);
-                if (alreadyExists) {
-                    alert('This email is already registered. Please login instead.');
-                    return;
-                }
-
-                const profilePhoto = await readFileAsDataUrl(photoFile);
-
-                users.push({
-                    role: 'lawyer',
-                    fullName,
+                const { data, error } = await supabaseClient.auth.signUp({
                     email,
                     password,
-                    licenseNo,
-                    contactNo,
-                    profilePhoto,
-                    description: '',
-                    createdAt: new Date().toISOString()
+                    options: {
+                        data: {
+                            full_name: fullName,
+                            license_no: licenseNo,
+                            role: 'lawyer'
+                        }
+                    }
                 });
 
-                saveLawyerUsers(users);
-                sessionStorage.setItem('nyay_pravah_active_user', JSON.stringify({ role: 'lawyer', email, fullName }));
+                if (error) throw error;
 
-                alert('Profile saved successfully. Proceeding to verification upload.');
-                window.location.href = 'lawerverification.html';
+                if (!data.user) {
+                    throw new Error('Signup did not return a user. Check Supabase Auth settings.');
+                }
+
+                alert('Registration successful. Redirecting to lawyer verification...');
+                window.location.href = './lawyer-verification.html';
+                return;
             } catch (err) {
-                alert('Unable to save profile: ' + err.message);
+                alert('Auth Error: ' + err.message);
                 console.error(err);
             } finally {
-                verifyBtn.innerText = 'Verify Your Licence To Continue';
-                verifyBtn.disabled = false;
+                setVerifyButtonState(false);
             }
         });
 
-        const backHomeBtn = document.querySelector('.back-home-btn');
+        const backHomeBtn = document.getElementById('backHome');
         if (backHomeBtn) {
             backHomeBtn.addEventListener('click', () => {
-                window.location.href = 'index.html';
+                window.location.href = './index.html';
             });
         }
 
-        const backPrevBtn = document.querySelector('.back-previous-btn');
+        const backPrevBtn = document.getElementById('backPrev');
         if (backPrevBtn) {
             backPrevBtn.addEventListener('click', () => {
                 if (window.history.length > 1) {
                     window.history.back();
                     return;
                 }
-                window.location.href = 'lawerlogin.html';
+                window.location.href = './index.html';
             });
         }
     </script>
