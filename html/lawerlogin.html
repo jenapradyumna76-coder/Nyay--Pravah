@@ -192,6 +192,26 @@
             return resetUrl.toString();
         }
 
+        async function checkRegisteredLawyerEmail(email) {
+            const { data, error } = await supabaseClient
+                .rpc('is_registered_lawyer_email', { p_email: email });
+
+            if (error) {
+                const message = error.message || '';
+                const functionMissing = /Could not find the function|schema cache/i.test(message);
+
+                // Allow login/reset flows to continue gracefully when DB function is not yet deployed.
+                if (functionMissing) {
+                    console.warn('RPC function is_registered_lawyer_email is not available yet.');
+                    return null;
+                }
+
+                throw error;
+            }
+
+            return Boolean(data);
+        }
+
         // Login handler
         loginForm.addEventListener('submit', async (event) => {
             event.preventDefault();
@@ -217,19 +237,16 @@
 
                 if (authError) {
                     // Check email existence via security-definer RPC (no direct profile read needed).
-                    const { data: isRegistered, error: existsError } = await supabaseClient
-                        .rpc('is_registered_lawyer_email', { p_email: email });
-
-                    if (existsError) {
-                        throw existsError;
-                    }
+                    const isRegistered = await checkRegisteredLawyerEmail(email);
 
                     if (isRegistered) {
                         // Email exists but password is wrong
                         showError(`The password is incorrect. Please try again or register if you haven't already.`);
-                    } else {
+                    } else if (isRegistered === false) {
                         // Email doesn't exist in database
                         showError(`This email is not registered with us.<br><br>Please register as a lawyer first before logging in. <a href="./nwelawyerregester.html" style="color: #1e3a8a; text-decoration: underline; font-weight: bold;">Click here to register</a>`, true);
+                    } else {
+                        showError('Invalid email or password. If you are a new user, please register first.');
                     }
                     return;
                 }
@@ -295,15 +312,18 @@
             forgotPasswordLink.textContent = 'Sending reset email...';
 
             try {
-                const { data: isRegistered, error: existsError } = await supabaseClient
-                    .rpc('is_registered_lawyer_email', { p_email: email });
-
-                if (existsError) {
-                    throw existsError;
-                }
+                const isRegistered = await checkRegisteredLawyerEmail(email);
 
                 if (!isRegistered) {
-                    showError('This email is not registered with us as a lawyer account.');
+                    if (isRegistered === false) {
+                        showError('This email is not registered with us as a lawyer account.');
+                    } else {
+                        // Fallback when RPC function is missing: preserve UX and do not block reset flow.
+                        showError('Email verification service is not fully configured yet. Sending a reset email if this account exists.');
+                    }
+                }
+
+                if (isRegistered === false) {
                     return;
                 }
 
