@@ -126,7 +126,9 @@ body {
     margin-bottom: 1.15rem;
 }
 
-.login-form {
+.login-form,
+.verification-form,
+.verification-upload-form {
     display: flex;
     flex-direction: column;
     gap: 0.55rem;
@@ -155,7 +157,22 @@ body {
     box-shadow: 0 0 0 4px rgba(45, 125, 221, 0.16);
 }
 
+.forgot-password-row {
+    display: flex;
+    justify-content: flex-end;
+    margin: -4px 0 14px;
+}
 
+.forgot-password-link {
+    color: #1d4b83;
+    font-size: 0.9rem;
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.forgot-password-link:hover {
+    text-decoration: underline;
+}
 
 .auth-submit {
     border: none;
@@ -171,6 +188,12 @@ body {
 
 .auth-submit:hover {
     transform: translateY(-2px);
+}
+
+.auth-submit:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+    transform: none;
 }
 
 .judge-theme {
@@ -248,7 +271,7 @@ body {
     width: 100%;
     background: #ffffff;
     margin-top: 4rem;
-    font-family: 'Open Sans', sans-serif;
+    font-family: "Open Sans", sans-serif;
 }
 
 .footer-primary-links {
@@ -296,7 +319,7 @@ body {
 }
 
 .footer-col a:hover {
-    color: #57B9FF;
+    color: #57b9ff;
 }
 
 .app-card {
@@ -341,7 +364,7 @@ body {
 }
 
 .policy-links a {
-    color: #4B0082;
+    color: #4b0082;
     text-decoration: none;
     margin: 0 10px;
 }
@@ -367,7 +390,7 @@ body {
 }
 
 .mherm-badge {
-    background-color: #57B9FF;
+    background-color: #57b9ff;
     color: white;
     padding: 5px 10px;
     border-radius: 5px;
@@ -458,5 +481,4 @@ body {
     .flow-actions {
         grid-template-columns: repeat(2, minmax(0, 1fr));
     }
-
 }
