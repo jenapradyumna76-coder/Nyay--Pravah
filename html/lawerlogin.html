@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 
 <head>
@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Lawyer Login - Nav Pravah</title>
     <link rel="stylesheet" href="../styles/login.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 
 <body>
@@ -24,7 +25,17 @@
                 <h1 class="auth-title">Lawyer Login</h1>
                 <p class="auth-subtitle">Access your lawyer workspace for clients, documents, and ongoing matters.</p>
 
-                <form class="login-form" data-role="Lawyer">
+                <div id="error-container" style="display: none; padding: 15px; margin-bottom: 20px; background-color: #fee2e2; border: 1px solid #fca5a5; border-radius: 6px; color: #991b1b;">
+                    <strong>Login Failed:</strong>
+                    <p id="error-message" style="margin: 8px 0 0 0;"></p>
+                </div>
+
+                <div id="success-container" style="display: none; padding: 15px; margin-bottom: 20px; background-color: #ecfdf5; border: 1px solid #6ee7b7; border-radius: 6px; color: #065f46;">
+                    <strong>Success:</strong>
+                    <p id="success-message" style="margin: 8px 0 0 0;"></p>
+                </div>
+
+                <form class="login-form" id="loginForm" data-role="Lawyer">
                     <label for="lawyer-email" class="auth-label">Email</label>
                     <input id="lawyer-email" type="email" class="auth-input" placeholder="lawyer@navpravah.in" required>
 
@@ -32,14 +43,18 @@
                     <input id="lawyer-password" type="password" class="auth-input" placeholder="Enter password"
                         required>
 
+                    <div class="forgot-password-row">
+                        <a href="#" id="forgotPasswordLink" class="forgot-password-link">Forgot Password?</a>
+                    </div>
+
                     
 
-                    <button type="submit" class="auth-submit lawyer-theme">Sign In</button>
-                    <button type="button" class="new-signin-btn">New Sign-In</button>
+                    <button type="submit" class="auth-submit lawyer-theme" id="signInBtn">Sign In</button>
+                    <button type="button" class="new-signin-btn" id="newSignInBtn">New Sign-In</button>
 
                     <div class="flow-actions">
-                        <button class="secondary-btn back-home-btn" type="button">Back To Home</button>
-                        <button class="secondary-btn back-previous-btn" type="button">Back To Previous</button>
+                        <button class="secondary-btn back-home-btn" id="backHomeBtn" type="button">Back To Home</button>
+                        <button class="secondary-btn back-previous-btn" id="backPrevBtn" type="button">Back To Previous</button>
                     </div>
                 </form>
             </div>
@@ -120,7 +135,215 @@
         </footer>
     </main>
 
-    <script src="../scripts/auth.js"></script>
+    <script>
+        // Supabase credentials for lawyer project
+        const LAWYER_SUPABASE_URL = 'https://shotgiqungofuoquwpzw.supabase.co';
+        const LAWYER_SUPABASE_ANON_KEY = 'sb_publishable_gmf7zxCsLx4MOKZ-aXMw7Q_alAgKkaQ';
+        const supabaseClient = supabase.createClient(LAWYER_SUPABASE_URL, LAWYER_SUPABASE_ANON_KEY);
+
+        const loginForm = document.getElementById('loginForm');
+        const emailInput = document.getElementById('lawyer-email');
+        const passwordInput = document.getElementById('lawyer-password');
+        const errorContainer = document.getElementById('error-container');
+        const errorMessage = document.getElementById('error-message');
+        const successContainer = document.getElementById('success-container');
+        const successMessage = document.getElementById('success-message');
+        const signInBtn = document.getElementById('signInBtn');
+        const newSignInBtn = document.getElementById('newSignInBtn');
+        const backHomeBtn = document.getElementById('backHomeBtn');
+        const backPrevBtn = document.getElementById('backPrevBtn');
+        const forgotPasswordLink = document.getElementById('forgotPasswordLink');
+
+        // Show error message
+        function showError(message, allowHtml = false) {
+            if (allowHtml) {
+                errorMessage.innerHTML = message;
+            } else {
+                errorMessage.textContent = message;
+            }
+            errorContainer.style.display = 'block';
+            hideSuccess();
+        }
+
+        // Hide error message
+        function hideError() {
+            errorContainer.style.display = 'none';
+            errorMessage.textContent = '';
+        }
+
+        // Show success message
+        function showSuccess(message) {
+            successMessage.textContent = message;
+            successContainer.style.display = 'block';
+            hideError();
+        }
+
+        // Hide success message
+        function hideSuccess() {
+            successContainer.style.display = 'none';
+            successMessage.textContent = '';
+        }
+
+        function getResetRedirectUrl() {
+            const resetUrl = new URL(window.location.href);
+            resetUrl.hash = '';
+            resetUrl.search = '';
+            resetUrl.pathname = resetUrl.pathname.replace(/[^/]*$/, 'lawyer-reset-password.html');
+            return resetUrl.toString();
+        }
+
+        // Login handler
+        loginForm.addEventListener('submit', async (event) => {
+            event.preventDefault();
+            hideError();
+
+            const email = emailInput.value.trim();
+            const password = passwordInput.value;
+
+            if (!email || !password) {
+                showError('Please enter both email and password.');
+                return;
+            }
+
+            signInBtn.disabled = true;
+            signInBtn.textContent = 'Signing In...';
+
+            try {
+                // Attempt to sign in with email and password
+                const { data: authData, error: authError } = await supabaseClient.auth.signInWithPassword({
+                    email,
+                    password
+                });
+
+                if (authError) {
+                    // Check email existence via security-definer RPC (no direct profile read needed).
+                    const { data: isRegistered, error: existsError } = await supabaseClient
+                        .rpc('is_registered_lawyer_email', { p_email: email });
+
+                    if (existsError) {
+                        throw existsError;
+                    }
+
+                    if (isRegistered) {
+                        // Email exists but password is wrong
+                        showError(`The password is incorrect. Please try again or register if you haven't already.`);
+                    } else {
+                        // Email doesn't exist in database
+                        showError(`This email is not registered with us.<br><br>Please register as a lawyer first before logging in. <a href="./nwelawyerregester.html" style="color: #1e3a8a; text-decoration: underline; font-weight: bold;">Click here to register</a>`, true);
+                    }
+                    return;
+                }
+
+                if (!authData.user) {
+                    showError('Login failed. Please check your credentials.');
+                    return;
+                }
+
+                // Verify user is a lawyer
+                const { data: profile, error: profileError } = await supabaseClient
+                    .from('lawyer_profiles')
+                    .select('role, full_name')
+                    .eq('id', authData.user.id)
+                    .single();
+
+                if (profileError || !profile) {
+                    showError('Your lawyer profile could not be found. Please contact support.');
+                    await supabaseClient.auth.signOut();
+                    return;
+                }
+
+                if (profile.role !== 'lawyer') {
+                    showError('This account is not registered as a lawyer. Please use your lawyer account.');
+                    await supabaseClient.auth.signOut();
+                    return;
+                }
+
+                // Login successful - redirect to dashboard
+                alert(`Welcome, ${profile.full_name}! Redirecting to your dashboard...`);
+                window.location.href = './lawyer-dashboard.html';
+
+            } catch (error) {
+                console.error('Login error:', error);
+                showError(`An error occurred during login: ${error.message}`);
+            } finally {
+                signInBtn.disabled = false;
+                signInBtn.textContent = 'Sign In';
+            }
+        });
+
+        // Send password reset email for registered lawyers
+        forgotPasswordLink.addEventListener('click', async (event) => {
+            event.preventDefault();
+            hideError();
+            hideSuccess();
+            const email = emailInput.value.trim();
+
+            if (!email) {
+                showError('Please enter your registered email first, then click Forgot Password.');
+                emailInput.focus();
+                return;
+            }
+
+            const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailPattern.test(email)) {
+                showError('Please enter a valid email address.');
+                emailInput.focus();
+                return;
+            }
+
+            forgotPasswordLink.style.pointerEvents = 'none';
+            forgotPasswordLink.textContent = 'Sending reset email...';
+
+            try {
+                const { data: isRegistered, error: existsError } = await supabaseClient
+                    .rpc('is_registered_lawyer_email', { p_email: email });
+
+                if (existsError) {
+                    throw existsError;
+                }
+
+                if (!isRegistered) {
+                    showError('This email is not registered with us as a lawyer account.');
+                    return;
+                }
+
+                const { error: resetError } = await supabaseClient.auth.resetPasswordForEmail(email, {
+                    redirectTo: getResetRedirectUrl()
+                });
+                if (resetError) {
+                    throw resetError;
+                }
+
+                showSuccess('Password reset email sent. Please check your inbox and spam folder.');
+            } catch (error) {
+                console.error('Forgot password error:', error);
+                showError(`Could not send reset email: ${error.message}`);
+            } finally {
+                forgotPasswordLink.style.pointerEvents = 'auto';
+                forgotPasswordLink.textContent = 'Forgot Password?';
+            }
+        });
+
+        // New Sign-In button -> Redirect to registration
+        newSignInBtn.addEventListener('click', () => {
+            window.location.href = './nwelawyerregester.html';
+        });
+
+        // Back to home
+        backHomeBtn.addEventListener('click', () => {
+            window.location.href = '../index.html';
+        });
+
+        // Back to previous page
+        backPrevBtn.addEventListener('click', () => {
+            if (window.history.length > 1) {
+                window.history.back();
+            } else {
+                window.location.href = '../index.html';
+            }
+        });
+    </script>
+   
 </body>
 
 </html>
