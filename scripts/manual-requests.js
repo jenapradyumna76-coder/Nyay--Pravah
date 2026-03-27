@@ -6,9 +6,10 @@ let filteredRequests = [];
 let currentPage = 1;
 let itemsPerPage = 10;
 let apiBaseUrl = '';
+let requestHoverTooltip = null;
 
 // Initialize when page loads
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     detectBackend().then(() => {
         loadRequests();
         setupEventListeners();
@@ -49,10 +50,76 @@ function setupEventListeners() {
     // Form validation
     const form = document.getElementById('newRequestForm');
     if (form) {
-        form.addEventListener('submit', function(e) {
+        form.addEventListener('submit', function (e) {
             e.preventDefault();
         });
     }
+
+    setupRequestDescriptionTooltip();
+}
+
+function setupRequestDescriptionTooltip() {
+    const tableBody = document.getElementById('requestsTableBody');
+    if (!tableBody) return;
+
+    requestHoverTooltip = document.createElement('div');
+    requestHoverTooltip.className = 'manual-request-hover-tooltip';
+    requestHoverTooltip.setAttribute('role', 'tooltip');
+    document.body.appendChild(requestHoverTooltip);
+
+    const showTooltip = (target, text, x, y) => {
+        if (!requestHoverTooltip || !text) return;
+        requestHoverTooltip.textContent = text;
+        requestHoverTooltip.classList.add('show');
+
+        const offset = 14;
+        const maxLeft = window.innerWidth - requestHoverTooltip.offsetWidth - 12;
+        const left = Math.min(Math.max(12, x + offset), maxLeft);
+
+        const topCandidate = y + offset;
+        const fitsBelow = topCandidate + requestHoverTooltip.offsetHeight <= window.innerHeight - 12;
+        const top = fitsBelow
+            ? topCandidate
+            : Math.max(12, y - requestHoverTooltip.offsetHeight - offset);
+
+        requestHoverTooltip.style.left = `${left}px`;
+        requestHoverTooltip.style.top = `${top}px`;
+    };
+
+    const hideTooltip = () => {
+        if (!requestHoverTooltip) return;
+        requestHoverTooltip.classList.remove('show');
+    };
+
+    tableBody.addEventListener('mouseover', (event) => {
+        const button = event.target.closest('.btn[data-description]');
+        if (!button || !tableBody.contains(button)) return;
+        showTooltip(button, button.getAttribute('data-description'), event.clientX, event.clientY);
+    });
+
+    tableBody.addEventListener('mousemove', (event) => {
+        const button = event.target.closest('.btn[data-description]');
+        if (!button || !tableBody.contains(button)) return;
+        showTooltip(button, button.getAttribute('data-description'), event.clientX, event.clientY);
+    });
+
+    tableBody.addEventListener('mouseout', (event) => {
+        const button = event.target.closest('.btn[data-description]');
+        if (!button || !tableBody.contains(button)) return;
+
+        const related = event.relatedTarget;
+        if (related && button.contains(related)) return;
+        hideTooltip();
+    });
+
+    tableBody.addEventListener('focusin', (event) => {
+        const button = event.target.closest('.btn[data-description]');
+        if (!button || !tableBody.contains(button)) return;
+        const rect = button.getBoundingClientRect();
+        showTooltip(button, button.getAttribute('data-description'), rect.left + rect.width / 2, rect.bottom);
+    });
+
+    tableBody.addEventListener('focusout', hideTooltip);
 }
 
 // Load requests data
@@ -220,6 +287,7 @@ function createRequestRow(request) {
 
     const statusClass = `status-${request.status}`;
     const priorityClass = `priority-${request.priority}`;
+    const hoverDescription = escapeHtmlAttribute(request.description || 'No description available');
 
     row.innerHTML = `
         <td class="request-id">${request.id}</td>
@@ -235,7 +303,7 @@ function createRequestRow(request) {
         </td>
         <td>${formatDate(request.submittedDate)}</td>
         <td class="actions">
-            <button class="btn btn-sm btn-primary" onclick="viewRequestDetails('${request.id}')">
+            <button class="btn btn-sm btn-primary" onclick="openRequestPreview('${request.id}')" data-description="${hoverDescription}">
                 <i class="fas fa-eye"></i> View
             </button>
             ${request.status === 'pending' ? `
@@ -247,6 +315,23 @@ function createRequestRow(request) {
     `;
 
     return row;
+}
+
+function openRequestPreview(requestId) {
+    const request = requestsData.find(r => r.id === requestId);
+    if (request && request.description) {
+        showToast(request.description);
+    }
+    viewRequestDetails(requestId);
+}
+
+function escapeHtmlAttribute(value) {
+    return String(value)
+        .replace(/&/g, '&amp;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;');
 }
 
 // Format functions
@@ -426,21 +511,21 @@ function submitNewRequest() {
         method: 'POST',
         body: formData
     })
-    .then(response => {
-        if (!response.ok) {
-            throw new Error('Failed to submit request');
-        }
-        return response.json();
-    })
-    .then(data => {
-        loadRequests(); // Refresh data
-        closeNewRequestModal();
-        showToast('Request submitted successfully');
-    })
-    .catch(error => {
-        console.error('Error submitting request:', error);
-        showToast('Error submitting request', 'error');
-    });
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Failed to submit request');
+            }
+            return response.json();
+        })
+        .then(data => {
+            loadRequests(); // Refresh data
+            closeNewRequestModal();
+            showToast('Request submitted successfully');
+        })
+        .catch(error => {
+            console.error('Error submitting request:', error);
+            showToast('Error submitting request', 'error');
+        });
 }
 
 // View request details
@@ -523,6 +608,7 @@ window.openNewRequestModal = openNewRequestModal;
 window.closeNewRequestModal = closeNewRequestModal;
 window.closeRequestDetailsModal = closeRequestDetailsModal;
 window.submitNewRequest = submitNewRequest;
+window.openRequestPreview = openRequestPreview;
 window.viewRequestDetails = viewRequestDetails;
 window.editRequest = editRequest;
 window.filterRequests = filterRequests;

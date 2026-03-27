@@ -56,6 +56,12 @@ function setText(id, value) {
     node.textContent = value || '-';
 }
 
+function setInputValue(id, value) {
+    const node = document.getElementById(id);
+    if (!node) return;
+    node.value = value || '';
+}
+
 function renderProfile(role, user) {
     const defaultPhoto = '../asset/logo/mainlogo.jpeg';
     const photoNode = document.getElementById('profile-photo');
@@ -72,10 +78,9 @@ function renderProfile(role, user) {
     const descriptionText = user && user.description ? user.description : 'No description added yet.';
     setText('profile-description-text', descriptionText);
 
-    const descriptionInput = document.getElementById('profile-description-input');
-    if (descriptionInput) {
-        descriptionInput.value = user && user.description ? user.description : '';
-    }
+    setInputValue('profile-description-input', user && user.description ? user.description : '');
+    setInputValue('profile-email-input', user && user.email ? user.email : '');
+    setInputValue('profile-contact-input', user && user.contactNo ? user.contactNo : '');
 }
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -83,39 +88,73 @@ document.addEventListener('DOMContentLoaded', () => {
     const result = findProfileUser(role);
     renderProfile(role, result.user);
 
-    const saveBtn = document.getElementById('save-description-btn');
+    const saveBtn = document.getElementById('save-profile-btn') || document.getElementById('save-description-btn');
     if (!saveBtn) return;
 
     saveBtn.addEventListener('click', () => {
-        if (role !== 'judge') return;
-
         const descriptionInput = document.getElementById('profile-description-input');
+        const emailInput = document.getElementById('profile-email-input');
+        const contactInput = document.getElementById('profile-contact-input');
         const messageNode = document.getElementById('profile-save-message');
-        if (!descriptionInput || !result.user) {
+
+        if (!result.user) {
             if (messageNode) {
-                messageNode.textContent = 'No registered judge profile found.';
+                messageNode.textContent = 'No registered profile found.';
             }
             return;
         }
 
-        const updatedDescription = descriptionInput.value.trim();
+        const originalEmail = result.user.email;
+        const updatedEmail = emailInput ? emailInput.value.trim() : result.user.email;
+        const updatedContact = contactInput ? contactInput.value.trim() : (result.user.contactNo || '');
+        const updatedDescription = descriptionInput ? descriptionInput.value.trim() : (result.user.description || '');
+
+        if (!updatedEmail) {
+            if (messageNode) {
+                messageNode.textContent = 'Email is required.';
+            }
+            return;
+        }
+
+        const emailTakenByOther = result.users.some((user) => user.email === updatedEmail && user.email !== originalEmail);
+        if (emailTakenByOther) {
+            if (messageNode) {
+                messageNode.textContent = 'This email is already used by another account.';
+            }
+            return;
+        }
+
         const updatedUsers = result.users.map((user) => {
-            if (user.email !== result.user.email) {
+            if (user.email !== originalEmail) {
                 return user;
             }
 
             return {
                 ...user,
+                email: updatedEmail,
+                contactNo: updatedContact,
                 description: updatedDescription
             };
         });
 
         saveUsersByRole(role, updatedUsers);
-        result.user.description = updatedDescription;
-        renderProfile(role, result.user);
+
+        const activeUser = getActiveUser();
+        if (activeUser && activeUser.email === originalEmail) {
+            sessionStorage.setItem(ACTIVE_USER_KEY, JSON.stringify({
+                ...activeUser,
+                email: updatedEmail,
+                contactNo: updatedContact
+            }));
+        }
+
+        const refreshedUser = updatedUsers.find((user) => user.email === updatedEmail) || null;
+        result.user = refreshedUser;
+        result.users = updatedUsers;
+        renderProfile(role, refreshedUser);
 
         if (messageNode) {
-            messageNode.textContent = 'Description saved successfully.';
+            messageNode.textContent = 'Profile saved successfully.';
         }
     });
 });

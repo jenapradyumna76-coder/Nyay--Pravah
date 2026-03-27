@@ -11,7 +11,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 
-<body>
+<body class="judge-dashboard-page">
 
     <div class="sidebar-hover-zone" aria-hidden="true"></div>
 
@@ -49,16 +49,16 @@
             </div>
             <div class="header-actions">
                 <div class="live-status"><span class="pulse"></span> System Live</div>
-                <button id="loadNewCasesBtn" class="refresh-btn hidden" type="button">
+                <button id="loadNewCasesBtn" class="refresh-btn" type="button">
                     <i class="fas fa-layer-group"></i> Add More Cases
                 </button>
-                <button class="refresh-btn" onclick="fetchDashboardData()">
+                <button class="refresh-btn" type="button" onclick="fetchDashboardData()">
                     <i class="fas fa-sync-alt"></i> Refresh
                 </button>
             </div>
         </header>
 
-        <section class="dashboard-header">
+        <section class="dashboard-header balance-section">
             <h2>Daily Cause List Balance</h2>
             <div class="balance-meter">
                 <div class="track">
@@ -68,44 +68,40 @@
             </div>
         </section>
 
-        <div class="split-grid">
-            <div class="pane priority-pane">
-                <div class="pane-title">
-                    <i class="fas fa-exclamation-triangle"></i> Priority Cases
-                    <span class="case-count" id="priority-count">0</span>
+        <section class="priority-box">
+            <div class="priority-grid">
+                <div class="priority-card urgent-card">
+                    <h4 class="priority-header urgent-header">
+                        <i class="fas fa-fire"></i> Urgent
+                        <span class="priority-count" id="urgent-count">0</span>
+                    </h4>
+                    <div id="urgent-cases" class="case-list"></div>
                 </div>
-                <div class="priority-sections">
-                    <div class="priority-section">
-                        <h4 class="priority-header urgent-header">
-                            <i class="fas fa-fire"></i> Urgent
-                            <span class="priority-count" id="urgent-count">0</span>
-                        </h4>
-                        <div id="urgent-cases" class="case-list"></div>
-                    </div>
-                    <div class="priority-section">
-                        <h4 class="priority-header high-header">
-                            <i class="fas fa-arrow-up"></i> High Priority
-                            <span class="priority-count" id="high-count">0</span>
-                        </h4>
-                        <div id="high-cases" class="case-list"></div>
-                    </div>
-                    <div class="priority-section">
-                        <h4 class="priority-header medium-header">
-                            <i class="fas fa-minus"></i> Medium Priority
-                            <span class="priority-count" id="medium-count">0</span>
-                        </h4>
-                        <div id="medium-cases" class="case-list"></div>
-                    </div>
+                <div class="priority-card high-card">
+                    <h4 class="priority-header high-header">
+                        <i class="fas fa-arrow-up"></i> High Priority
+                        <span class="priority-count" id="high-count">0</span>
+                    </h4>
+                    <div id="high-cases" class="case-list"></div>
                 </div>
             </div>
+        </section>
 
+        <div class="split-grid">
             <div class="pane fresh-pane">
                 <div class="pane-title">
                     <i class="fas fa-leaf"></i> Fresh Cases
                     <span class="case-count" id="fresh-count">0</span>
                 </div>
-                <div id="fresh-cases" class="case-list">
+                <div id="fresh-cases" class="case-list"></div>
+            </div>
+
+            <div class="pane medium-pane">
+                <div class="pane-title">
+                    <i class="fas fa-minus"></i> Medium Priority
+                    <span class="case-count" id="medium-count">0</span>
                 </div>
+                <div id="medium-cases" class="case-list"></div>
             </div>
         </div>
 

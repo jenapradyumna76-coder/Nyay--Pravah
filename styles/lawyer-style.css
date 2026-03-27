@@ -1,35 +1,60 @@
-/* --- 1. Global Reset & Variables --- */
+/* ============================================
+   LAWYER DASHBOARD - COMPREHENSIVE CSS
+   Modern, Responsive, Accessible Design
+   ============================================ */
+
 :root {
-    --sidebar-width: 260px;
+    /* Color Palette - Lawyer Theme */
     --sidebar-bg: #1a1c23;
     --main-bg: #f4f7fa;
-    --primary: #2563eb;
+    --primary: #0891b2;
+    --primary-light: #cffafe;
+    --primary-dark: #0e7490;
+    --accent: #2563eb;
     --danger: #dc2626;
+    --danger-light: #fee2e2;
     --success: #16a34a;
-    --warning: #e67e22;
+    --success-light: #dcfce7;
+    --warning: #f59e0b;
+    --warning-light: #fef3c7;
     --text-main: #374151;
+    --text-secondary: #6b7280;
+    --text-light: #9ca3af;
     --border-color: #e5e7eb;
+    --border-light: #f3f4f6;
+    --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.05);
+    --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.08);
+    --shadow-lg: 0 10px 25px rgba(0, 0, 0, 0.1);
+    --transition-fast: 0.2s ease;
+    --transition-default: 0.3s ease;
 }
 
 * {
-    box-sizing: border-box;
     margin: 0;
     padding: 0;
+    box-sizing: border-box;
+}
+
+html {
+    scroll-behavior: smooth;
 }
 
 body {
-    font-family: 'Inter', 'Segoe UI', sans-serif;
+    font-family: 'Inter', 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
     background: var(--main-bg);
     color: var(--text-main);
-    display: flex;
     min-height: 100vh;
     overflow-x: hidden;
-    /* Prevents horizontal scroll */
+    line-height: 1.6;
+    display: flex;
 }
 
-/* --- 2. Sidebar (Fixed to Left) --- */
+/* ============================================ 
+   SIDEBAR STYLES
+   ============================================ */
+
 .sidebar {
-    width: var(--sidebar-width);
+    width: 260px;
     background: var(--sidebar-bg);
     color: white;
     padding: 20px;
@@ -40,16 +65,8 @@ body {
     left: 0;
     top: 0;
     z-index: 1000;
-}
-
-.logo {
-    font-size: 24px;
-    font-weight: bold;
-    margin-bottom: 40px;
-    color: #4488ff;
-    display: flex;
-    align-items: center;
-    gap: 12px;
+    overflow-y: auto;
+    box-shadow: 4px 0 12px rgba(0, 0, 0, 0.15);
 }
 
 .sidebar-logo {
@@ -57,9 +74,9 @@ body {
     align-items: center;
     gap: 12px;
     margin-bottom: 40px;
-    padding: 0.75rem 0.5rem;
+    padding: 12px;
     border-radius: 12px;
-    transition: background-color 0.3s ease;
+    transition: background-color var(--transition-default);
 }
 
 .sidebar-logo:hover {
@@ -73,37 +90,57 @@ body {
     background-color: rgba(255, 255, 255, 0.1);
     border-radius: 10px;
     padding: 0.4rem;
+    transition: transform var(--transition-default);
+}
+
+.sidebar-logo-img:hover {
+    transform: scale(1.05);
 }
 
 .sidebar-logo-text {
     font-size: 1rem;
     font-weight: 800;
-    color: #4488ff;
-    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+    color: var(--primary);
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+    letter-spacing: 0.5px;
 }
 
 .menu {
     display: flex;
     flex-direction: column;
-    gap: 8px;
+    gap: 6px;
+    flex: 1;
 }
 
 .menu a {
-    color: #9ca3af;
+    color: var(--text-light);
     text-decoration: none;
     display: flex;
     align-items: center;
     gap: 12px;
     padding: 12px 15px;
     border-radius: 8px;
-    transition: 0.3s ease;
-    width: 100%;
+    margin-bottom: 2px;
+    transition: all var(--transition-default);
+    border-left: 3px solid transparent;
 }
 
-.menu a.active,
 .menu a:hover {
-    background: #2d2f39;
+    background: rgba(255, 255, 255, 0.1);
     color: white;
+    border-left-color: var(--primary);
+}
+
+.menu a.active {
+    background: rgba(8, 145, 178, 0.2);
+    color: white;
+    border-left-color: var(--primary);
+    font-weight: 600;
+}
+
+.menu i {
+    width: 20px;
+    text-align: center;
 }
 
 .user-profile {
@@ -111,83 +148,142 @@ body {
     display: flex;
     align-items: center;
     gap: 12px;
-    border-top: 1px solid #2d2f39;
-    padding-top: 20px;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    padding-top: 16px;
 }
 
 .avatar {
-    width: 35px;
-    height: 35px;
+    width: 40px;
+    height: 40px;
     background: var(--primary);
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-weight: bold;
+    font-weight: 700;
+    font-size: 0.9rem;
+    color: white;
+    flex-shrink: 0;
 }
 
-/* --- 3. Main Content (Pushed Right) --- */
-.main-content {
-    flex: 1;
-    margin-left: var(--sidebar-width);
-    /* FIX: Prevents Sidebar Overlap */
-    min-height: 100vh;
+.user-profile .info {
     display: flex;
     flex-direction: column;
+    min-width: 0;
 }
 
-/* Top Bar (Search + Compliance Status) */
+.user-profile strong {
+    font-size: 0.9rem;
+    color: white;
+    display: block;
+}
+
+.user-profile span {
+    font-size: 0.8rem;
+    color: var(--text-light);
+}
+
+/* ============================================ 
+   MAIN CONTENT
+   ============================================ */
+
+.main-content {
+    flex: 1;
+    margin-left: 260px;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    overflow-y: auto;
+}
+
+/* ============================================ 
+   TOP BAR/HEADER
+   ============================================ */
+
 .top-bar {
-    padding: 15px 30px;
+    padding: 16px 30px;
     background: white;
     border-bottom: 1px solid var(--border-color);
     display: flex;
-    justify-content: space-between;
+    justify-content: flex-start;
     align-items: center;
+    gap: 20px;
     position: sticky;
     top: 0;
     z-index: 500;
+    box-shadow: var(--shadow-sm);
 }
 
 .search-box {
-    background: #f3f4f6;
-    padding: 8px 18px;
+    background: var(--border-light);
+    padding: 10px 15px;
     border-radius: 20px;
     display: flex;
     align-items: center;
-    width: 350px;
+    min-width: 320px;
+    flex-shrink: 0;
+    border: 1px solid transparent;
+    transition: all var(--transition-default);
+}
+
+.search-box:focus-within {
+    background: white;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(8, 145, 178, 0.1);
+}
+
+.search-box i {
+    color: var(--text-light);
+    margin-right: 8px;
 }
 
 .search-box input {
     border: none;
     background: transparent;
-    margin-left: 10px;
     outline: none;
     width: 100%;
-    font-size: 14px;
+    font-size: 0.9rem;
+    color: var(--text-main);
+}
+
+.search-box input::placeholder {
+    color: var(--text-light);
+}
+
+.header-actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-left: auto;
 }
 
 .live-status {
-    font-size: 13px;
-    font-weight: 600;
-    display: flex;
+    display: inline-flex;
     align-items: center;
     gap: 8px;
+    background: var(--success-light);
+    color: #166534;
+    border: 1px solid #86efac;
+    border-radius: 1rem;
+    padding: 8px 14px;
+    font-size: 0.9rem;
+    font-weight: 700;
+    white-space: nowrap;
 }
 
 .pulse {
-    width: 8px;
-    height: 8px;
-    background: var(--success);
+    width: 10px;
+    height: 10px;
     border-radius: 50%;
-    display: inline-block;
-    box-shadow: 0 0 0 rgba(22, 163, 74, 0.4);
-    animation: pulse-animation 2s infinite;
+    background: var(--success);
+    flex-shrink: 0;
+    animation: pulse-animation 1.8s infinite;
 }
 
 @keyframes pulse-animation {
     0% {
-        box-shadow: 0 0 0 0px rgba(22, 163, 74, 0.7);
+        box-shadow: 0 0 0 0 rgba(22, 163, 74, 0.7);
     }
 
     70% {
@@ -195,149 +291,1097 @@ body {
     }
 
     100% {
-        box-shadow: 0 0 0 0px rgba(22, 163, 74, 0);
+        box-shadow: 0 0 0 0 rgba(22, 163, 74, 0);
     }
 }
 
-/* --- 4. Dashboard Grid & Cards --- */
-.dashboard-header {
-    padding: 30px 30px 10px 30px;
-}
-
-.case-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-    gap: 25px;
-    padding: 20px 30px;
-}
-
-/* Lawyer Specific Card Styles */
-.lawyer-card {
-    background: #fff;
+.refresh-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
     border: 1px solid var(--border-color);
-    border-top: 5px solid var(--sidebar-bg);
+    border-radius: 1rem;
+    background: white;
+    color: var(--text-main);
+    padding: 10px 16px;
+    font-size: 0.9rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all var(--transition-default);
+    white-space: nowrap;
+}
+
+.refresh-btn:hover {
+    border-color: var(--primary);
+    background: var(--primary-light);
+    color: var(--primary);
+    box-shadow: 0 4px 12px rgba(8, 145, 178, 0.15);
+    transform: translateY(-2px);
+}
+
+.refresh-btn:active {
+    transform: translateY(0);
+}
+
+.refresh-btn.hidden {
+    display: none;
+}
+
+/* ============================================ 
+   DASHBOARD SECTIONS
+   ============================================ */
+
+.dashboard-header {
+    padding: 25px 30px 15px;
+    background: white;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.dashboard-header h2 {
+    font-size: 1.5rem;
+    color: var(--text-main);
+    margin-bottom: 6px;
+    font-weight: 700;
+}
+
+.dashboard-header p {
+    color: var(--text-secondary);
+    font-size: 0.95rem;
+    margin-bottom: 12px;
+}
+
+.balance-meter .track {
+    height: 12px;
+    background: var(--border-light);
+    border-radius: 6px;
+    display: flex;
+    overflow: hidden;
+}
+
+.segment {
+    font-size: 9px;
+    color: white;
+    text-align: center;
+    line-height: 12px;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.backlog-seg {
+    background: #f59e0b;
+}
+
+.fresh-seg {
+    background: var(--primary);
+}
+
+/* ============================================ 
+   REPORTS & CARDS
+   ============================================ */
+
+.reports-wrapper {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 20px;
+    padding: 0 30px 20px 30px;
+    flex: 1;
+}
+
+.report-section {
+    background: white;
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
     padding: 20px;
+    margin-bottom: 0;
+    box-shadow: var(--shadow-sm);
+}
+
+.report-section h3 {
+    margin-bottom: 16px;
+    color: var(--text-main);
+    font-size: 1.1rem;
+    font-weight: 700;
+}
+
+.report-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 15px;
+}
+
+.report-card {
+    border: 1px solid var(--border-color);
+    border-left: 4px solid var(--primary);
     border-radius: 10px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.03);
-    transition: transform 0.2s;
-}
-
-.lawyer-card:hover {
-    transform: translateY(-4px);
-}
-
-.text-success {
-    color: var(--success);
-    font-weight: bold;
-}
-
-.text-danger {
-    color: var(--danger);
-    font-weight: bold;
-}
-
-.adj-info {
-    margin: 15px 0;
-    padding: 12px;
-    background: #f8f9fa;
-    border-radius: 6px;
-}
-
-.limit-near {
-    border: 1px solid var(--warning);
-    background: #fff9f0;
-}
-
-/* --- 5. Buttons & Controls --- */
-.main-btn {
-    width: 100%;
-    background: var(--sidebar-bg);
-    color: white;
-    padding: 12px;
-    border: none;
-    border-radius: 6px;
-    font-weight: 600;
+    padding: 16px;
+    background: var(--border-light);
+    transition: all var(--transition-default);
     cursor: pointer;
-    margin-top: 10px;
-    transition: 0.2s;
 }
 
-.main-btn:hover {
-    background: #2d2f39;
+.report-card:hover {
+    background: white;
+    border-color: var(--primary);
+    box-shadow: var(--shadow-md);
+    transform: translateY(-2px);
 }
 
-.adj-btn {
-    background: #9ca3af;
-    color: white;
-    border: none;
-    padding: 6px 12px;
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 12px;
+.report-card-title {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: var(--text-main);
+    margin-bottom: 8px;
 }
 
-.adj-btn:disabled {
-    background: #e5e7eb;
-    color: #9ca3af;
-    cursor: not-allowed;
+.report-card-meta {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    line-height: 1.4;
 }
 
-/* --- 6. Judge Dashboard Specifics --- */
+/* ============================================ 
+   SPLIT GRID - CASES
+   ============================================ */
+
 .split-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 25px;
+    gap: 20px;
     padding: 20px 30px;
+    flex: 1;
 }
 
 .pane {
     background: white;
     border-radius: 12px;
     border: 1px solid var(--border-color);
-    min-height: 400px;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    box-shadow: var(--shadow-sm);
+    transition: all var(--transition-default);
+    overflow: hidden;
+}
+
+.pane:hover {
+    box-shadow: var(--shadow-md);
 }
 
 .pane-title {
-    padding: 15px 20px;
-    font-weight: bold;
+    padding: 16px;
+    font-weight: 700;
     border-bottom: 1px solid var(--border-color);
-    background: #fafafa;
-    border-radius: 12px 12px 0 0;
-}
-
-/* --- 7. Modals & Notifications --- */
-.modal {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.5);
     display: flex;
     align-items: center;
-    justify-content: center;
-    z-index: 2000;
-    backdrop-filter: blur(2px);
+    gap: 10px;
+    color: var(--text-main);
+    background: var(--border-light);
 }
 
-.modal-content {
-    background: white;
-    padding: 30px;
-    border-radius: 12px;
-    width: 450px;
-    position: relative;
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+/* Case List Styles */
+.case-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 12px;
+    overflow-y: auto;
+    flex: 1;
 }
+
+.case-item {
+    background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+    border: 1px solid var(--border-light);
+    border-radius: 10px;
+    padding: 12px;
+    cursor: pointer;
+    transition: all var(--transition-default);
+    position: relative;
+    overflow: hidden;
+}
+
+.case-item::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 4px;
+    background: var(--primary);
+    transform: scaleY(0);
+    transform-origin: top;
+    transition: transform var(--transition-default);
+}
+
+.case-item:hover::before {
+    transform: scaleY(1);
+}
+
+.case-item:hover {
+    border-color: var(--primary);
+    box-shadow: 0 4px 12px rgba(8, 145, 178, 0.15);
+    transform: translateX(4px);
+}
+
+/* Lawyer Card Styles */
+.lawyer-card {
+    background: white;
+    border: 1px solid var(--border-color);
+    border-top: 5px solid var(--sidebar-bg);
+    border-top-color: var(--primary);
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: var(--shadow-sm);
+    transition: all var(--transition-default);
+    display: flex;
+    flex-direction: column;
+}
+
+.lawyer-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-md);
+    border-top-color: var(--primary-dark);
+}
+
+/* Grid for Lawyer Cards */
+.case-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 25px;
+    padding: 20px 30px;
+    flex: 1;
+}
+
+/* Analytics Cards */
+.analytics-card {
+    background: white;
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    padding: 18px;
+    box-shadow: var(--shadow-sm);
+    transition: all var(--transition-default);
+}
+
+.analytics-card:hover {
+    box-shadow: var(--shadow-md);
+    transform: translateY(-3px);
+}
+
+.analytics-card h4 {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    margin-bottom: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.analytics-value {
+    font-size: 2rem;
+    font-weight: 800;
+    color: var(--primary);
+    margin-bottom: 8px;
+}
+
+.analytics-description {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+}
+
+/* ============================================ 
+   BADGES & INFO BOXES
+   ============================================ */
+
+.text-success {
+    color: var(--success);
+    font-weight: 600;
+}
+
+.text-danger {
+    color: var(--danger);
+    font-weight: 600;
+}
+
+.text-warning {
+    color: var(--warning);
+    font-weight: 600;
+}
+
+.text-info {
+    color: var(--primary);
+    font-weight: 600;
+}
+
+.adj-info {
+    margin: 15px 0;
+    padding: 12px;
+    background: var(--border-light);
+    border-radius: 8px;
+    border-left: 4px solid var(--primary);
+    font-size: 0.9rem;
+}
+
+.adj-info.limit-near {
+    border-left-color: var(--warning);
+    background: #fffbeb;
+    border: 1px solid var(--warning-light);
+}
+
+.adj-info.limit-reached {
+    border-left-color: var(--danger);
+    background: #fef2f2;
+    border: 1px solid var(--danger-light);
+}
+
+/* ============================================ 
+   BUTTONS & CONTROLS
+   ============================================ */
+
+.main-btn {
+    width: 100%;
+    background: var(--sidebar-bg);
+    color: white;
+    padding: 12px 16px;
+    border: none;
+    border-radius: 8px;
+    font-weight: 700;
+    cursor: pointer;
+    font-size: 0.95rem;
+    margin-top: 12px;
+    transition: all var(--transition-default);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.main-btn:hover {
+    background: #2d2f39;
+    box-shadow: var(--shadow-md);
+    transform: translateY(-2px);
+}
+
+.main-btn:active {
+    transform: translateY(0);
+}
+
+.main-btn:disabled {
+    background: var(--border-color);
+    color: var(--text-light);
+    cursor: not-allowed;
+}
+
+.adj-btn {
+    background: var(--text-light);
+    color: white;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.8rem;
+    font-weight: 600;
+    transition: all var(--transition-fast);
+}
+
+.adj-btn:hover:not(:disabled) {
+    background: var(--text-secondary);
+    box-shadow: var(--shadow-sm);
+    transform: translateY(-1px);
+}
+
+.adj-btn:disabled {
+    background: var(--border-color);
+    color: var(--text-light);
+    cursor: not-allowed;
+}
+
+/* ============================================ 
+   RESPONSIVE DESIGN
+   ============================================ */
+
+@media (max-width: 1200px) {
+    .case-grid {
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 15px;
+        padding: 15px;
+    }
+
+    .split-grid {
+        grid-template-columns: 1fr;
+        gap: 15px;
+        padding: 15px;
+    }
+
+    .report-list {
+        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+        gap: 12px;
+    }
+}
+
+@media (max-width: 768px) {
+    .main-content {
+        margin-left: 60px;
+    }
+
+    .sidebar {
+        width: 60px;
+        padding: 10px;
+    }
+
+    .sidebar-logo-text {
+        display: none;
+    }
+
+    .menu a {
+        padding: 12px 8px;
+        justify-content: center;
+    }
+
+    .menu i {
+        width: auto;
+        margin: 0;
+    }
+
+    .top-bar {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 12px;
+        padding: 12px 15px;
+    }
+
+    .search-box {
+        width: 100%;
+        min-width: 100%;
+    }
+
+    .header-actions {
+        width: 100%;
+        justify-content: flex-start;
+        gap: 8px;
+        margin-left: 0;
+    }
+
+    .dashboard-header {
+        padding: 15px;
+    }
+
+    .dashboard-header h2 {
+        font-size: 1.2rem;
+    }
+
+    .dashboard-header p {
+        font-size: 0.9rem;
+    }
+
+    .case-grid {
+        grid-template-columns: 1fr;
+        padding: 15px;
+        gap: 12px;
+    }
+
+    .split-grid {
+        grid-template-columns: 1fr;
+        gap: 12px;
+        padding: 15px;
+    }
+
+    .report-list {
+        grid-template-columns: 1fr;
+        gap: 10px;
+    }
+
+    .report-section {
+        padding: 15px;
+    }
+
+    .report-section h3 {
+        font-size: 1rem;
+        margin-bottom: 12px;
+    }
+
+    .report-card {
+        padding: 12px;
+    }
+
+    .report-card-title {
+        font-size: 0.9rem;
+    }
+
+    .report-card-meta {
+        font-size: 0.75rem;
+    }
+
+    .lawyer-card {
+        padding: 15px;
+    }
+
+    .analytics-value {
+        font-size: 1.5rem;
+    }
+
+    .adj-info {
+        margin: 10px 0;
+        padding: 10px;
+        font-size: 0.85rem;
+    }
+
+    .main-btn {
+        padding: 10px 14px;
+        font-size: 0.85rem;
+        margin-top: 10px;
+    }
+
+    .adj-btn {
+        padding: 5px 10px;
+        font-size: 0.75rem;
+    }
+
+    .user-profile {
+        flex-direction: column;
+        text-align: center;
+    }
+}
+
+@media (max-width: 480px) {
+    .case-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .dashboard-header {
+        padding: 12px;
+    }
+
+    .dashboard-header h2 {
+        font-size: 1rem;
+    }
+
+    .dashboard-header p {
+        font-size: 0.85rem;
+    }
+
+    .balance-meter .track {
+        height: 10px;
+        border-radius: 5px;
+    }
+
+    .segment {
+        font-size: 8px;
+        line-height: 10px;
+    }
+
+    .report-list {
+        grid-template-columns: 1fr;
+    }
+
+    .report-card {
+        padding: 10px;
+    }
+
+    .report-card-title {
+        font-size: 0.85rem;
+    }
+
+    .report-card-meta {
+        font-size: 0.7rem;
+    }
+
+    .analytics-value {
+        font-size: 1.3rem;
+    }
+
+    .main-btn {
+        padding: 8px 12px;
+        font-size: 0.8rem;
+    }
+
+    .refresh-btn {
+        padding: 8px 12px;
+        font-size: 0.8rem;
+    }
+
+    .live-status {
+        padding: 6px 10px;
+        font-size: 0.8rem;
+    }
+}
+
+/* ============================================ 
+   UTILITY CLASSES
+   ============================================ */
 
 .hidden {
     display: none !important;
 }
 
-.close {
-    position: absolute;
-    top: 15px;
-    right: 20px;
-    font-size: 22px;
+.divider {
+    height: 1px;
+    background: rgba(255, 255, 255, 0.1);
+    margin: 10px 0;
+}
+
+/* ============================================ 
+   PRINT STYLES
+   ============================================ */
+
+@media print {
+
+    .sidebar,
+    .top-bar,
+    .refresh-btn,
+    .live-status {
+        display: none;
+    }
+
+    .main-content {
+        margin-left: 0;
+    }
+
+    .case-grid,
+    .split-grid,
+    .report-list {
+        grid-template-columns: 1fr;
+    }
+
+    body {
+        background: white;
+    }
+
+    .lawyer-card,
+    .report-section,
+    .pane {
+        box-shadow: none;
+        border: 1px solid #ccc;
+        page-break-inside: avoid;
+    }
+}
+
+/* ============================================
+   LAWYER PENDING CASES - MODERN STYLING
+   ============================================ */
+
+.lawyer-pending-cases-page {
+    background: linear-gradient(135deg, #ecf9ff 0%, #f4f7fa 50%, #faf8ff 100%);
+}
+
+.lawyer-pending-cases-page .main-content {
+    animation: fade-in-up 0.5s ease;
+}
+
+@keyframes fade-in-up {
+    from {
+        opacity: 0;
+        transform: translateY(0.75rem);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.lawyer-pending-cases-page .top-bar {
+    background: linear-gradient(90deg, #ffffff 0%, #f8fbff 100%);
+    border-bottom: 2px solid #cffafe;
+    box-shadow: 0 4px 12px rgba(8, 145, 178, 0.08);
+}
+
+.lawyer-pending-cases-page .dashboard-header {
+    background: linear-gradient(90deg, #ffffff 0%, #f8fbff 100%);
+    border-bottom: 2px solid #cffafe;
+    box-shadow: 0 4px 12px rgba(8, 145, 178, 0.08);
+}
+
+.lawyer-pending-cases-page .dashboard-header h2 {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    color: #0c4a6e;
+    font-size: 1.65rem;
+}
+
+.lawyer-pending-cases-page .dashboard-header h2 i {
+    color: #0891b2;
+}
+
+.lawyer-pending-cases-page .dashboard-header p {
+    color: #64748b;
+}
+
+.lawyer-pending-cases-page .balance-meter {
+    margin-top: 1rem;
+}
+
+.lawyer-pending-cases-page .balance-meter .track {
+    height: 8px;
+    background: #cffafe;
+    border-radius: 10px;
+    box-shadow: inset 0 2px 4px rgba(8, 145, 178, 0.1);
+}
+
+.lawyer-pending-cases-page .report-section {
+    background: #ffffff;
+    border: 1px solid #c6f6d5;
+    border-radius: 1.1rem;
+    padding: 1.5rem;
+    box-shadow: 0 8px 18px rgba(8, 145, 178, 0.06);
+    transition: all 0.28s ease;
+}
+
+.lawyer-pending-cases-page .report-section:hover {
+    box-shadow: 0 12px 28px rgba(8, 145, 178, 0.1);
+}
+
+.lawyer-pending-cases-page .report-section h3 {
+    font-size: 1.35rem;
+    color: #0c4a6e;
+    margin-bottom: 1rem;
+    font-weight: 800;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.lawyer-pending-cases-page .report-section h3 i {
+    color: #0891b2;
+}
+
+.lawyer-pending-cases-page .report-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 1.1rem;
+}
+
+.lawyer-pending-cases-page .report-card {
+    background: linear-gradient(135deg, #f0feff 0%, #ffffff 100%);
+    border: 1px solid #a5d8dd;
+    border-left: 4px solid #0891b2;
+    border-radius: 1rem;
+    padding: 1.3rem;
+    box-shadow: 0 6px 14px rgba(8, 145, 178, 0.08);
+    transition: all 0.28s cubic-bezier(0.34, 1.56, 0.64, 1);
     cursor: pointer;
-    color: #999;
+    position: relative;
+    overflow: hidden;
+}
+
+.lawyer-pending-cases-page .report-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, transparent, rgba(8, 145, 178, 0.1));
+    transition: right 0.5s ease;
+    pointer-events: none;
+}
+
+.lawyer-pending-cases-page .report-card:hover {
+    transform: translateY(-0.35rem);
+    box-shadow: 0 14px 32px rgba(8, 145, 178, 0.14);
+    border-color: #0891b2;
+    background: linear-gradient(135deg, #ffffff 0%, #f0feff 100%);
+}
+
+.lawyer-pending-cases-page .report-card:hover::before {
+    right: 0;
+}
+
+.lawyer-pending-cases-page .report-card-title {
+    font-size: 1rem;
+    font-weight: 800;
+    color: #0c4a6e;
+    margin-bottom: 0.75rem;
+}
+
+.lawyer-pending-cases-page .report-card-meta {
+    font-size: 0.85rem;
+    color: #475569;
+    line-height: 1.6;
+}
+
+.lawyer-pending-cases-page .report-card-meta strong {
+    color: #0891b2;
+    font-weight: 700;
+}
+
+.lawyer-pending-cases-page .report-card-meta svg,
+.lawyer-pending-cases-page .report-card-meta i {
+    color: #0891b2;
+    margin-right: 0.35rem;
+}
+
+/* Status Indicators */
+.lawyer-pending-cases-page .status-indicator {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: #cffafe;
+    color: #0c4a6e;
+    padding: 0.4rem 0.75rem;
+    border-radius: 999px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+}
+
+.lawyer-pending-cases-page .status-indicator.urgent {
+    background: #fee2e2;
+    color: #991b1b;
+}
+
+.lawyer-pending-cases-page .status-indicator.high {
+    background: #ffedd5;
+    color: #9a3412;
+}
+
+.lawyer-pending-cases-page .status-indicator.medium {
+    background: #fef3c7;
+    color: #854d0e;
+}
+
+/* Footer styling */
+.lawyer-pending-cases-page .np-footer {
+    background: linear-gradient(90deg, #f8fbff, #ecf9ff);
+    border-top: 1px solid #cffafe;
+}
+
+@media (max-width: 1200px) {
+    .lawyer-pending-cases-page .report-list {
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 1rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .lawyer-pending-cases-page .dashboard-header {
+        padding: 1rem;
+    }
+
+    .lawyer-pending-cases-page .dashboard-header h2 {
+        font-size: 1.3rem;
+    }
+
+    .lawyer-pending-cases-page .report-section {
+        padding: 1rem;
+        margin: 0 1rem;
+    }
+
+    .lawyer-pending-cases-page .report-list {
+        grid-template-columns: 1fr;
+        gap: 0.9rem;
+    }
+
+    .lawyer-pending-cases-page .report-card {
+        padding: 1rem;
+    }
+
+    .lawyer-pending-cases-page .report-card-title {
+        font-size: 0.95rem;
+    }
+
+    .lawyer-pending-cases-page .report-card-meta {
+        font-size: 0.8rem;
+    }
+}
+
+/* ============================================
+   LAWYER PROFILE PAGE
+   ============================================ */
+
+.lawyer-profile-page {
+    background:
+        radial-gradient(900px 280px at 14% 0%, rgba(8, 145, 178, 0.18), transparent 60%),
+        radial-gradient(900px 280px at 100% 0%, rgba(14, 116, 144, 0.14), transparent 60%),
+        linear-gradient(180deg, #f4fbfc 0%, #ebf7fb 100%);
+}
+
+.lawyer-profile-page .top-bar {
+    background: rgba(255, 255, 255, 0.9);
+    backdrop-filter: blur(7px);
+    border-bottom: 1px solid #cdeff6;
+}
+
+.lawyer-profile-page .reports-wrapper {
+    padding: 22px 28px 24px;
+}
+
+.lawyer-profile-page .report-section {
+    border: 1px solid #cce9f2;
+    border-radius: 20px;
+    background: linear-gradient(165deg, #ffffff 0%, #f5fcff 100%);
+    box-shadow: 0 16px 34px rgba(12, 74, 110, 0.1);
+    padding: 18px;
+}
+
+.lawyer-profile-page .report-section h3 {
+    margin: 0 0 14px;
+    color: #0c4a6e;
+    font-size: 1.15rem;
+}
+
+.lawyer-profile-page .profile-layout {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 14px;
+}
+
+.lawyer-profile-page .profile-layout .report-card {
+    flex: 1 1 330px;
+    border-radius: 16px;
+    border: 1px solid #d7eef5;
+    background: #ffffff;
+    box-shadow: 0 10px 22px rgba(8, 145, 178, 0.1);
+    padding: 14px;
+}
+
+.lawyer-profile-page .profile-photo {
+    width: 8.6rem;
+    height: 8.6rem;
+    border-radius: 18px;
+    object-fit: cover;
+    border: 2px solid #ccebf8;
+    margin-bottom: 0.85rem;
+    box-shadow: 0 10px 20px rgba(8, 145, 178, 0.2);
+}
+
+.lawyer-profile-page .report-card-title {
+    color: #083344;
+    font-size: 1.02rem;
+    font-weight: 800;
+    margin-bottom: 0.7rem;
+}
+
+.lawyer-profile-page .profile-label {
+    color: #0f766e;
+    font-weight: 800;
+    margin-right: 0.38rem;
+}
+
+.lawyer-profile-page .report-card-meta {
+    color: #164e63;
+    font-size: 0.85rem;
+    margin-bottom: 0.32rem;
+    line-height: 1.5;
+}
+
+.lawyer-profile-page .profile-edit-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+    margin-bottom: 10px;
+}
+
+.lawyer-profile-page .profile-edit-label {
+    color: #155e75;
+    font-size: 0.8rem;
+    font-weight: 700;
+}
+
+.lawyer-profile-page .profile-edit-input {
+    width: 100%;
+    border: 1px solid #bfe4ee;
+    border-radius: 11px;
+    background: #f1fbfe;
+    padding: 9px 10px;
+    color: #0f172a;
+    font-size: 0.86rem;
+    outline: none;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.lawyer-profile-page .profile-edit-input:focus {
+    border-color: #0891b2;
+    box-shadow: 0 0 0 3px rgba(8, 145, 178, 0.14);
+    background: #ffffff;
+}
+
+.lawyer-profile-page .profile-edit-textarea {
+    resize: vertical;
+    min-height: 88px;
+}
+
+.lawyer-profile-page .profile-edit-actions {
+    margin: 10px 0 12px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.lawyer-profile-page .profile-save-message {
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: #0f766e;
+}
+
+.lawyer-profile-page .search-box {
+    background: #f0fcff;
+    border: 1px solid #cdeff6;
+}
+
+.lawyer-profile-page .search-box input {
+    color: #0f172a;
+    font-weight: 600;
+}
+
+.lawyer-profile-page .refresh-btn {
+    background: linear-gradient(135deg, #0e7490 0%, #0891b2 100%);
+    color: #ffffff;
+    border: none;
+    box-shadow: 0 10px 20px rgba(14, 116, 144, 0.28);
+}
+
+.lawyer-profile-page .refresh-btn:hover {
+    transform: translateY(-1px);
+    filter: brightness(1.05);
+}
+
+@media (max-width: 768px) {
+    .lawyer-profile-page .reports-wrapper {
+        padding: 14px;
+    }
+
+    .lawyer-profile-page .profile-layout {
+        flex-direction: column;
+    }
+
+    .lawyer-profile-page .profile-layout .report-card {
+        flex: 1 1 auto;
+    }
+}
+
+@media (max-width: 480px) {
+    .main-content {
+        margin-left: 56px;
+    }
+
+    .sidebar {
+        width: 56px;
+        padding: 8px;
+    }
+
+    .top-bar,
+    .dashboard-header,
+    .report-section,
+    .reports-wrapper {
+        padding-left: 10px;
+        padding-right: 10px;
+    }
+
+    .search-box {
+        min-width: 100%;
+        padding: 8px 10px;
+    }
+
+    .header-actions .refresh-btn,
+    .header-actions .btn,
+    .header-actions button {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .report-card,
+    .analytics-card,
+    .lawyer-card {
+        border-radius: 10px;
+    }
 }

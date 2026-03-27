@@ -1,23 +1,93 @@
-const STORAGE_KEY = 'nyay_pravah_dashboard_state_v3';
+const STORAGE_KEY = 'nyay_pravah_dashboard_state_v5';
 const TOTAL_CASES = 50;
 const ACTIVE_BATCH_SIZE = 10;
+const AUTO_SYNC_INTERVAL_MS = 5000;
 const isJudgeDashboard = document.title.includes('Judicial Command Center');
+const isLawyerDashboard = document.title.includes('Lawyer Portal');
+let dashboardSyncTimer = null;
+let isDashboardSyncing = false;
+
+// Demo priority cases
+const DEMO_PRIORITY_CASES = [
+    // 1 Urgent Case
+    { name: 'State of Maharashtra v. Imran Shaikh', priority: 'urgent', description: 'Serious criminal revision petition listed for urgent hearing under CrPC provisions.' },
+
+    // 1 High Priority Case
+    { name: 'Sharma Infra Projects Pvt. Ltd. v. Pune Municipal Corporation', priority: 'high', description: 'Commercial writ involving tender disqualification and interim injunction request.' },
+
+    // 4 Medium Priority Cases
+    { name: 'Rajesh Patil v. Sunita Patil', priority: 'medium', description: 'Civil suit concerning ancestral property partition and mutation records.' },
+    { name: 'Priya Nair v. Meridian Tech Services', priority: 'medium', description: 'Labour appeal alleging unlawful termination and unpaid statutory dues.' },
+    { name: 'Axis Components LLP v. Dev Buildcon', priority: 'medium', description: 'Commercial suit for breach of supply agreement and recovery of damages.' },
+    { name: 'Aditi Kulkarni v. Estate of Late V. Kulkarni', priority: 'medium', description: 'Probate and succession dispute regarding validity of testamentary documents.' }
+];
+
+const CASE_NAME_TEMPLATES = [
+    'State of Gujarat v. Arjun Mehta',
+    'State of Karnataka v. Faizan Ali',
+    'M/s Kaveri Developers v. Bruhat Bengaluru Mahanagara Palike',
+    'Sunrise Hospitals Pvt. Ltd. v. National Insurance Co. Ltd.',
+    'Ananya Rao v. Rohan Rao',
+    'Madhav Joshi v. Sub-Registrar, Nashik',
+    'Reliant Logistics Ltd. v. Port Trust Authority',
+    'Nisha Verma v. Commissioner of Income Tax',
+    'People for Clean Air v. State Pollution Control Board',
+    'Sanjay Tiwari v. City Cooperative Bank Ltd.',
+    'Ritika Sen v. Central Board of Secondary Education',
+    'Harpreet Singh v. Punjab State Power Corporation'
+];
+
+const CASE_TYPE_TEMPLATES = [
+    'Bail application in criminal proceedings',
+    'Writ petition under Article 226',
+    'Commercial contract enforcement dispute',
+    'Property title and injunction matter',
+    'Motor accident compensation appeal',
+    'Service law and reinstatement claim',
+    'Family court maintenance petition',
+    'Consumer protection deficiency complaint',
+    'Arbitration award challenge petition',
+    'Land acquisition compensation reference',
+    'Cheque dishonour complaint under NI Act',
+    'Probate and succession certificate matter'
+];
 
 function pad(num) {
     return String(num).padStart(3, '0');
 }
 
-function createCase(index) {
+function createCase(index, isPriority = false, priorityData = null) {
+    if (isPriority && priorityData) {
+        return {
+            sl: index,
+            id: `PR-${pad(index)}`,
+            name: priorityData.name,
+            description: priorityData.description,
+            bucket: 'fresh',
+            priority: priorityData.priority,
+            status: 'pending',
+            actionDate: ''
+        };
+    }
+
     const withinBatch = (index - 1) % ACTIVE_BATCH_SIZE;
     const isBacklog = withinBatch < 5;
     const prefix = isBacklog ? 'BK' : 'FR';
+    const generatedPriority = withinBatch === 0
+        ? 'urgent'
+        : withinBatch === 1
+            ? 'high'
+            : withinBatch <= 5
+                ? 'medium'
+                : 'none';
 
     return {
         sl: index,
         id: `${prefix}-${pad(index)}`,
-        name: `Case Party ${index} vs Respondent ${index}`,
-        description: `Case file ${index} with preliminary documentation and hearing notes.`,
+        name: `${CASE_NAME_TEMPLATES[(index - 1) % CASE_NAME_TEMPLATES.length]} (${2018 + (index % 8)})`,
+        description: `${CASE_TYPE_TEMPLATES[(index - 1) % CASE_TYPE_TEMPLATES.length]} - Case file ${index} listed for procedural hearing and document compliance.`,
         bucket: isBacklog ? 'backlog' : 'fresh',
+        priority: generatedPriority,
         status: 'pending',
         actionDate: ''
     };
@@ -25,14 +95,26 @@ function createCase(index) {
 
 function createInitialState() {
     const cases = [];
-    for (let i = 1; i <= TOTAL_CASES; i += 1) {
+
+    // Add all demo priority cases
+    DEMO_PRIORITY_CASES.forEach((priorityData, idx) => {
+        cases.push(createCase(idx + 1, true, priorityData));
+    });
+
+    // Add regular cases starting after priority cases
+    const startIndex = DEMO_PRIORITY_CASES.length + 1;
+    for (let i = startIndex; i <= TOTAL_CASES; i += 1) {
         cases.push(createCase(i));
     }
 
+    // Include all priority cases + 4 fresh cases (no backlog for demo)
+    const activeCasesCount = DEMO_PRIORITY_CASES.length + 4;
+    const activeCases = cases.slice(0, Math.min(activeCasesCount, cases.length));
+
     return {
         cases,
-        activeCaseIds: cases.slice(0, ACTIVE_BATCH_SIZE).map((caseData) => caseData.id),
-        cursor: ACTIVE_BATCH_SIZE
+        activeCaseIds: activeCases.map((caseData) => caseData.id),
+        cursor: Math.min(activeCasesCount, cases.length)
     };
 }
 
@@ -41,16 +123,16 @@ function getTodayIsoDate() {
 }
 
 function statusLabel(status) {
-    if (status === 'adjoined') return 'Adjoined';
+    if (status === 'adjoined') return 'Completed';
     if (status === 'stay') return 'Stay';
-    if (status === 'rehearing') return 'Re-hearing';
+    if (status === 'reschedule') return 'Rescheduled';
     return 'Pending';
 }
 
 function statusClass(status) {
     if (status === 'adjoined') return 'status-adjoined';
     if (status === 'stay') return 'status-stay';
-    if (status === 'rehearing') return 'status-rehearing';
+    if (status === 'reschedule') return 'status-reschedule';
     return 'status-pending';
 }
 
@@ -106,16 +188,43 @@ function buildView(state, searchTerm = '') {
         ? activeCases.filter((caseData) => caseData.id.toLowerCase().includes(normalized))
         : activeCases;
 
-    const backlog = filteredActiveCases.filter((caseData) => caseData.bucket === 'backlog');
-    const fresh = filteredActiveCases.filter((caseData) => caseData.bucket === 'fresh');
+    const normalizedCases = filteredActiveCases.map((caseData) => ({ ...caseData }));
+    const hasUrgent = normalizedCases.some((caseData) => caseData.priority === 'urgent');
+    const hasHigh = normalizedCases.some((caseData) => caseData.priority === 'high');
+
+    if (!hasUrgent && normalizedCases.length > 0) {
+        normalizedCases[0].priority = 'urgent';
+    }
+
+    if (!hasHigh && normalizedCases.length > 1) {
+        normalizedCases[1].priority = 'high';
+    }
+
+    const hasMedium = normalizedCases.some((caseData) => caseData.priority === 'medium');
+    if (!hasMedium) {
+        const mediumCandidates = normalizedCases.filter((caseData) => caseData.priority === 'none');
+        const mediumSlots = Math.min(2, mediumCandidates.length);
+        for (let i = 0; i < mediumSlots; i += 1) {
+            mediumCandidates[i].priority = 'medium';
+        }
+    }
+
+    const urgent = normalizedCases.filter((caseData) => caseData.priority === 'urgent');
+    const high = normalizedCases.filter((caseData) => caseData.priority === 'high');
+    const medium = normalizedCases.filter((caseData) => caseData.priority === 'medium' || (caseData.priority === 'none' && caseData.bucket === 'backlog'));
+    const fresh = normalizedCases.filter((caseData) => caseData.priority === 'none' && caseData.bucket === 'fresh');
     const allFinished = getActiveCases(state).length === 0;
 
     return {
         ok: true,
-        backlog,
+        urgent,
+        high,
+        medium,
         fresh,
         counts: {
-            backlog: backlog.length,
+            urgent: urgent.length,
+            high: high.length,
+            medium: medium.length,
             fresh: fresh.length
         },
         allFinished
@@ -149,6 +258,24 @@ function getAnalytics(state) {
         adjoined: buckets.adjoined.length,
         availableToLoad: getPendingOutsideDashboard(state).length
     };
+}
+
+function ensurePriorityCoverage(caseBatch) {
+    if (!Array.isArray(caseBatch) || caseBatch.length === 0) {
+        return;
+    }
+
+    const hasUrgent = caseBatch.some((caseData) => caseData.priority === 'urgent');
+    const hasHigh = caseBatch.some((caseData) => caseData.priority === 'high');
+
+    if (!hasUrgent) {
+        caseBatch[0].priority = 'urgent';
+    }
+
+    if (!hasHigh) {
+        const highIndex = caseBatch.length > 1 ? 1 : 0;
+        caseBatch[highIndex].priority = 'high';
+    }
 }
 
 function addManualCase(manualCase) {
@@ -249,9 +376,9 @@ function renderCases(cases, containerId) {
                     <input type="date" class="case-date-input" value="${selectedDate}">
                 </div>
                 <div class="case-action-buttons">
-                    <button type="button" class="case-action-btn btn-stay" data-action="stay">Mark Stay</button>
-                    <button type="button" class="case-action-btn btn-rehearing" data-action="rehearing">Re-hearing</button>
-                    <button type="button" class="case-action-btn btn-adjoined" data-action="adjoined">Mark Adjoined</button>
+                    <button type="button" class="case-action-btn btn-reschedule" data-action="reschedule">Reschedule</button>
+                    <button type="button" class="case-action-btn btn-stay" data-action="stay">Stay</button>
+                    <button type="button" class="case-action-btn btn-adjoined" data-action="adjoined">Adjoined</button>
                 </div>
             </div>` : ''}
         </div>`;
@@ -292,14 +419,14 @@ async function apiLoadNewCases() {
     }
 
     if (state.cursor >= state.cases.length) {
-        return {
-            ok: true,
-            reason: 'No new cases remaining in local queue.',
-            view
-        };
+        const nextStart = state.cases.length + 1;
+        for (let i = 0; i < ACTIVE_BATCH_SIZE; i += 1) {
+            state.cases.push(createCase(nextStart + i));
+        }
     }
 
     const nextSlice = state.cases.slice(state.cursor, state.cursor + ACTIVE_BATCH_SIZE);
+    ensurePriorityCoverage(nextSlice);
     state.activeCaseIds = nextSlice.map((caseData) => caseData.id);
     state.cursor += nextSlice.length;
 
@@ -318,20 +445,87 @@ async function apiLoadNewCases() {
 }
 
 function renderView(viewPayload) {
-    renderCases(viewPayload.backlog, 'backlog-list');
-    renderCases(viewPayload.fresh, 'fresh-list');
-    updateBalanceMeter(viewPayload.counts.backlog, viewPayload.counts.fresh);
+    const setTextIfExists = (id, value) => {
+        const element = document.getElementById(id);
+        if (element) {
+            element.textContent = value;
+        }
+    };
+
+    if (isJudgeDashboard) {
+        renderCases(viewPayload.urgent, 'urgent-cases');
+        renderCases(viewPayload.high, 'high-cases');
+        renderCases(viewPayload.medium, 'medium-cases');
+        renderCases(viewPayload.fresh, 'fresh-cases');
+
+        setTextIfExists('urgent-count', viewPayload.counts.urgent);
+        setTextIfExists('high-count', viewPayload.counts.high);
+        setTextIfExists('medium-count', viewPayload.counts.medium);
+        setTextIfExists('fresh-count', viewPayload.counts.fresh);
+    }
+
+    if (isLawyerDashboard) {
+        const priorityCases = [
+            ...viewPayload.urgent,
+            ...viewPayload.high,
+            ...viewPayload.medium
+        ];
+
+        renderCases(priorityCases, 'backlog-list');
+        renderCases(viewPayload.fresh, 'fresh-list');
+    }
+
+    const backlogCount = viewPayload.counts.urgent + viewPayload.counts.high + viewPayload.counts.medium;
+    const freshCount = viewPayload.counts.fresh;
+    updateBalanceMeter(backlogCount, freshCount);
+
     updateLoadButtonVisibility(viewPayload.allFinished);
 }
 
-async function fetchDashboardData() {
+async function fetchDashboardData(options = {}) {
+    const {
+        autoLoadIfFinished = true,
+        silent = false
+    } = options;
+
+    if (isDashboardSyncing) {
+        return;
+    }
+
+    isDashboardSyncing = true;
+
     try {
         const payload = await apiGetView();
+
+        if (autoLoadIfFinished && payload.allFinished) {
+            const loadPayload = await apiLoadNewCases();
+            renderView(loadPayload.view);
+
+            if (!silent && loadPayload.reason && !loadPayload.reason.includes('No new cases remaining')) {
+                showActionMessage(loadPayload.reason);
+            }
+            return;
+        }
+
         renderView(payload);
     } catch (error) {
-        showActionMessage('Unable to load local dashboard data.');
+        if (!silent) {
+            showActionMessage('Unable to load local dashboard data.');
+        }
         console.error(error);
+    } finally {
+        isDashboardSyncing = false;
     }
+}
+
+function startDashboardAutoSync() {
+    if (dashboardSyncTimer) {
+        clearInterval(dashboardSyncTimer);
+    }
+
+    dashboardSyncTimer = setInterval(() => {
+        fetchDashboardData({ autoLoadIfFinished: false, silent: true });
+    }, AUTO_SYNC_INTERVAL_MS);
 }
 
 async function handleCaseAction(event) {
@@ -356,13 +550,23 @@ async function handleCaseAction(event) {
     try {
         const payload = await apiUpdateCase(caseId, action, actionDate);
         renderView(payload);
+
         if (action === 'adjoined') {
             showActionMessage(`Case ${caseId} completed and removed from the list.`);
             return;
         }
 
-        const actionText = action === 'rehearing' ? 'Re-hearing' : 'Stay';
-        showActionMessage(`Case ${caseId} moved to ${actionText} section.`);
+        if (action === 'reschedule') {
+            showActionMessage(`Case ${caseId} rescheduled to ${actionDate}.`);
+            return;
+        }
+
+        if (action === 'stay') {
+            showActionMessage(`Case ${caseId} marked as Stay.`);
+            return;
+        }
+
+        showActionMessage(`Case ${caseId} action completed.`);
     } catch (error) {
         showActionMessage(error.message);
     }
@@ -380,6 +584,30 @@ async function handleLoadNewCases() {
 
 document.addEventListener('DOMContentLoaded', function () {
     fetchDashboardData();
+    startDashboardAutoSync();
+
+    document.addEventListener('visibilitychange', () => {
+        if (document.visibilityState === 'visible') {
+            fetchDashboardData({ autoLoadIfFinished: false, silent: true });
+        }
+    });
+
+    window.addEventListener('focus', () => {
+        fetchDashboardData({ autoLoadIfFinished: false, silent: true });
+    });
+
+    window.addEventListener('storage', (event) => {
+        if (event.key === STORAGE_KEY) {
+            fetchDashboardData({ autoLoadIfFinished: false, silent: true });
+        }
+    });
+
+    window.addEventListener('beforeunload', () => {
+        if (dashboardSyncTimer) {
+            clearInterval(dashboardSyncTimer);
+            dashboardSyncTimer = null;
+        }
+    });
 
     const loadBtn = document.getElementById('loadNewCasesBtn');
     if (loadBtn) {
