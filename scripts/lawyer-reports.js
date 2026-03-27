@@ -36,7 +36,13 @@ function renderLawyerPendingCases(state, query) {
 }
 
 function renderLawyerMissingCases(state, query) {
-    const missingCases = state.cases.filter((caseData) => caseData.status === 'pending' && caseData.sl % 3 === 0);
+    const missingCases = state.cases.filter((caseData) => (
+        caseData.status === 'pending' && (
+            caseData.detailsMissing === true ||
+            caseData.isDetailMissing === true ||
+            (Array.isArray(caseData.missingFields) && caseData.missingFields.length > 0)
+        )
+    ));
     renderLawyerCaseCards(lawyerWithSearch(missingCases, query), 'lawyerMissingDetailsList');
 }
 

@@ -1,4 +1,4 @@
-const DASHBOARD_STORAGE_KEY = 'nyay_pravah_dashboard_state_v5';
+const DASHBOARD_STORAGE_KEY = 'nyay_pravah_dashboard_state_v6';
 const ANALYTICS_SYNC_INTERVAL_MS = 5000;
 
 let analyticsSyncTimer = null;

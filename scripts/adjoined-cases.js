@@ -16,10 +16,11 @@ async function loadAdjoinedCases() {
             const data = await response.json();
             adjoinedCases = getAdjoinedCasesFromData(data);
         } else {
-            throw new Error('API unavailable');
+            adjoinedCases = [];
         }
     } catch (error) {
-        adjoinedCases = getStaticAdjoinedCases();
+        console.error('Unable to load adjoined cases from backend:', error.message);
+        adjoinedCases = [];
     }
 
     filteredCases = [...adjoinedCases];
@@ -33,39 +34,7 @@ function getAdjoinedCasesFromData(data) {
     if (Array.isArray(data.backlog)) allCases.push(...data.backlog);
     if (Array.isArray(data.fresh)) allCases.push(...data.fresh);
 
-    const adjoined = allCases.filter(c => c.adjoined === true || (c.tags || []).includes('adjoined'));
-    if (adjoined.length > 0) return adjoined;
-
-    return getStaticAdjoinedCases();
-}
-
-function getStaticAdjoinedCases() {
-    return [
-        {
-            id: 'ADJ-2024-001',
-            leadCase: 'CS-2024-089',
-            joinedCases: ['CS-2024-090', 'CS-2024-091'],
-            type: 'civil',
-            priority: 'high',
-            status: 'pending',
-            courtRoom: 'Courtroom 04',
-            nextHearing: '2024-03-29',
-            description: 'Property transfer and ownership dispute cases joined due to common questions of law.',
-            judge: 'Honorable Judge Harshita Sharma'
-        },
-        {
-            id: 'ADJ-2024-002',
-            leadCase: 'FD-2024-045',
-            joinedCases: ['FD-2024-046', 'FD-2024-047'],
-            type: 'family',
-            priority: 'urgent',
-            status: 'in-progress',
-            courtRoom: 'Courtroom 04',
-            nextHearing: '2024-03-26',
-            description: 'Child custody and support cases joined for simultaneous hearing.',
-            judge: 'Honorable Judge Harshita Sharma'
-        }
-    ];
+    return allCases.filter(c => c.adjoined === true || (c.tags || []).includes('adjoined'));
 }
 
 function renderCases() {
@@ -188,6 +157,6 @@ function getStatusClass(status) { return { pending: 'pending', 'in-progress': 'i
 function getStatusLabel(status) { return { pending: 'Pending', 'in-progress': 'In Progress', completed: 'Completed', postponed: 'Postponed' }[status] || 'Pending'; }
 function getPriorityClass(priority) { return { urgent: 'urgent', high: 'high', medium: 'medium', low: 'low' }[priority] || 'medium'; }
 function getTypeLabel(type) { return { civil: 'Civil', criminal: 'Criminal', family: 'Family', property: 'Property', commercial: 'Commercial' }[type] || 'Civil'; }
-function formatDate(dateStr) { if (!dateStr || dateStr === 'Disposed') return dateStr || 'N/A'; const date = new Date(dateStr); return date.toLocaleDateString('en-IN',{ day:'numeric', month:'short', year:'numeric' }); }
+function formatDate(dateStr) { if (!dateStr || dateStr === 'Disposed') return dateStr || 'N/A'; const date = new Date(dateStr); return date.toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }); }
 function showLoading() { document.getElementById('loading-spinner').style.display = 'block'; document.getElementById('cases-table').style.display = 'none'; }
 function hideLoading() { document.getElementById('loading-spinner').style.display = 'none'; document.getElementById('cases-table').style.display = 'table'; }

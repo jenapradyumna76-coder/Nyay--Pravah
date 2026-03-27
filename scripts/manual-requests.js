@@ -39,8 +39,8 @@ function detectBackend() {
 
     return tryPort(ports[0]).then(hasBackend => {
         if (!hasBackend) {
-            console.log('No backend detected, running in static mode');
-            loadMockRequests();
+            apiBaseUrl = '';
+            console.warn('No backend detected on localhost probe. Falling back to relative API path.');
         }
     });
 }
@@ -124,11 +124,6 @@ function setupRequestDescriptionTooltip() {
 
 // Load requests data
 function loadRequests() {
-    if (!apiBaseUrl) {
-        // Already loaded in detectBackend
-        return;
-    }
-
     fetch(`${apiBaseUrl}/api/requests`)
         .then(response => {
             if (!response.ok) {
@@ -143,104 +138,10 @@ function loadRequests() {
         })
         .catch(error => {
             console.error('Error fetching requests:', error);
-            loadMockRequests();
+            requestsData = [];
+            filteredRequests = [];
+            updateRequestsUI();
         });
-}
-
-// Load mock requests for static mode
-function loadMockRequests() {
-    requestsData = [
-        {
-            id: "REQ-2024-001",
-            type: "case-transfer",
-            subject: "Transfer of Civil Suit #CS-2024-089",
-            description: "Request to transfer case to High Court due to complexity",
-            status: "approved",
-            priority: "high",
-            submittedDate: "2024-03-20",
-            caseId: "CS-2024-089",
-            justification: "Case involves complex legal issues requiring higher court expertise"
-        },
-        {
-            id: "REQ-2024-002",
-            type: "hearing-postpone",
-            subject: "Postpone hearing for Family Dispute #FD-2024-045",
-            description: "Medical emergency requires postponement",
-            status: "pending",
-            priority: "urgent",
-            submittedDate: "2024-03-19",
-            caseId: "FD-2024-045",
-            justification: "Defendant hospitalized, medical certificate attached"
-        },
-        {
-            id: "REQ-2024-003",
-            type: "document-request",
-            subject: "Additional documents required for Property Case",
-            description: "Request for missing property documents",
-            status: "processing",
-            priority: "medium",
-            submittedDate: "2024-03-18",
-            caseId: "PC-2024-067",
-            justification: "Documents essential for fair trial proceedings"
-        },
-        {
-            id: "REQ-2024-004",
-            type: "witness-summon",
-            subject: "Summon additional witness for Criminal Case",
-            description: "Key witness not present during initial hearing",
-            status: "approved",
-            priority: "high",
-            submittedDate: "2024-03-17",
-            caseId: "CR-2024-023",
-            justification: "Witness testimony crucial for case resolution"
-        },
-        {
-            id: "REQ-2024-005",
-            type: "court-order",
-            subject: "Amendment to court order #CO-2024-012",
-            description: "Correct clerical error in order date",
-            status: "rejected",
-            priority: "low",
-            submittedDate: "2024-03-16",
-            caseId: "CO-2024-012",
-            justification: "Typographical error in original order"
-        },
-        {
-            id: "REQ-2024-006",
-            type: "administrative",
-            subject: "Request for additional court staff",
-            description: "Need extra clerical support for backlog",
-            status: "pending",
-            priority: "medium",
-            submittedDate: "2024-03-15",
-            justification: "Current workload exceeds capacity"
-        },
-        {
-            id: "REQ-2024-007",
-            type: "case-transfer",
-            subject: "Transfer Commercial Dispute to Specialized Court",
-            description: "Case involves complex commercial law",
-            status: "processing",
-            priority: "medium",
-            submittedDate: "2024-03-14",
-            caseId: "CD-2024-034",
-            justification: "Specialized court better equipped to handle technical aspects"
-        },
-        {
-            id: "REQ-2024-008",
-            type: "hearing-postpone",
-            subject: "Postpone hearing due to lawyer unavailability",
-            description: "Counsel has medical emergency",
-            status: "approved",
-            priority: "high",
-            submittedDate: "2024-03-13",
-            caseId: "CS-2024-078",
-            justification: "Legal representation essential for fair trial"
-        }
-    ];
-
-    filteredRequests = [...requestsData];
-    updateRequestsUI();
 }
 
 // Update requests UI
@@ -426,7 +327,7 @@ function filterRequests() {
 
 // Pagination
 function updatePagination() {
-    const totalPages = Math.ceil(filteredRequests.length / itemsPerPage);
+    const totalPages = Math.max(1, Math.ceil(filteredRequests.length / itemsPerPage));
     const prevBtn = document.getElementById('prevPage');
     const nextBtn = document.getElementById('nextPage');
 
@@ -438,7 +339,7 @@ function updatePagination() {
 }
 
 function changePage(direction) {
-    const totalPages = Math.ceil(filteredRequests.length / itemsPerPage);
+    const totalPages = Math.max(1, Math.ceil(filteredRequests.length / itemsPerPage));
     currentPage += direction;
 
     if (currentPage < 1) currentPage = 1;
@@ -482,28 +383,6 @@ function submitNewRequest() {
     const attachments = document.getElementById('attachments').files;
     for (let i = 0; i < attachments.length; i++) {
         formData.append('attachments', attachments[i]);
-    }
-
-    if (!apiBaseUrl) {
-        // Static mode - simulate submission
-        const newRequest = {
-            id: `REQ-2024-${String(requestsData.length + 1).padStart(3, '0')}`,
-            type: formData.get('type'),
-            subject: formData.get('subject'),
-            description: formData.get('description'),
-            status: 'pending',
-            priority: formData.get('priority'),
-            submittedDate: new Date().toISOString().split('T')[0],
-            caseId: formData.get('caseId') || null,
-            justification: formData.get('justification')
-        };
-
-        requestsData.unshift(newRequest);
-        filteredRequests = [...requestsData];
-        updateRequestsUI();
-        closeNewRequestModal();
-        showToast('Request submitted successfully');
-        return;
     }
 
     // Submit to backend

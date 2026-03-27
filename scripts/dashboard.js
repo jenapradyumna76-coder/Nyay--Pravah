@@ -1,120 +1,21 @@
-const STORAGE_KEY = 'nyay_pravah_dashboard_state_v5';
-const TOTAL_CASES = 50;
-const ACTIVE_BATCH_SIZE = 10;
+const STORAGE_KEY = 'nyay_pravah_dashboard_state_v6';
 const AUTO_SYNC_INTERVAL_MS = 5000;
 const isJudgeDashboard = document.title.includes('Judicial Command Center');
 const isLawyerDashboard = document.title.includes('Lawyer Portal');
 let dashboardSyncTimer = null;
 let isDashboardSyncing = false;
-
-// Demo priority cases
-const DEMO_PRIORITY_CASES = [
-    // 1 Urgent Case
-    { name: 'State of Maharashtra v. Imran Shaikh', priority: 'urgent', description: 'Serious criminal revision petition listed for urgent hearing under CrPC provisions.' },
-
-    // 1 High Priority Case
-    { name: 'Sharma Infra Projects Pvt. Ltd. v. Pune Municipal Corporation', priority: 'high', description: 'Commercial writ involving tender disqualification and interim injunction request.' },
-
-    // 4 Medium Priority Cases
-    { name: 'Rajesh Patil v. Sunita Patil', priority: 'medium', description: 'Civil suit concerning ancestral property partition and mutation records.' },
-    { name: 'Priya Nair v. Meridian Tech Services', priority: 'medium', description: 'Labour appeal alleging unlawful termination and unpaid statutory dues.' },
-    { name: 'Axis Components LLP v. Dev Buildcon', priority: 'medium', description: 'Commercial suit for breach of supply agreement and recovery of damages.' },
-    { name: 'Aditi Kulkarni v. Estate of Late V. Kulkarni', priority: 'medium', description: 'Probate and succession dispute regarding validity of testamentary documents.' }
-];
-
-const CASE_NAME_TEMPLATES = [
-    'State of Gujarat v. Arjun Mehta',
-    'State of Karnataka v. Faizan Ali',
-    'M/s Kaveri Developers v. Bruhat Bengaluru Mahanagara Palike',
-    'Sunrise Hospitals Pvt. Ltd. v. National Insurance Co. Ltd.',
-    'Ananya Rao v. Rohan Rao',
-    'Madhav Joshi v. Sub-Registrar, Nashik',
-    'Reliant Logistics Ltd. v. Port Trust Authority',
-    'Nisha Verma v. Commissioner of Income Tax',
-    'People for Clean Air v. State Pollution Control Board',
-    'Sanjay Tiwari v. City Cooperative Bank Ltd.',
-    'Ritika Sen v. Central Board of Secondary Education',
-    'Harpreet Singh v. Punjab State Power Corporation'
-];
-
-const CASE_TYPE_TEMPLATES = [
-    'Bail application in criminal proceedings',
-    'Writ petition under Article 226',
-    'Commercial contract enforcement dispute',
-    'Property title and injunction matter',
-    'Motor accident compensation appeal',
-    'Service law and reinstatement claim',
-    'Family court maintenance petition',
-    'Consumer protection deficiency complaint',
-    'Arbitration award challenge petition',
-    'Land acquisition compensation reference',
-    'Cheque dishonour complaint under NI Act',
-    'Probate and succession certificate matter'
-];
+let caseActionModal = null;
+let pendingCaseActionContext = null;
 
 function pad(num) {
     return String(num).padStart(3, '0');
 }
 
-function createCase(index, isPriority = false, priorityData = null) {
-    if (isPriority && priorityData) {
-        return {
-            sl: index,
-            id: `PR-${pad(index)}`,
-            name: priorityData.name,
-            description: priorityData.description,
-            bucket: 'fresh',
-            priority: priorityData.priority,
-            status: 'pending',
-            actionDate: ''
-        };
-    }
-
-    const withinBatch = (index - 1) % ACTIVE_BATCH_SIZE;
-    const isBacklog = withinBatch < 5;
-    const prefix = isBacklog ? 'BK' : 'FR';
-    const generatedPriority = withinBatch === 0
-        ? 'urgent'
-        : withinBatch === 1
-            ? 'high'
-            : withinBatch <= 5
-                ? 'medium'
-                : 'none';
-
-    return {
-        sl: index,
-        id: `${prefix}-${pad(index)}`,
-        name: `${CASE_NAME_TEMPLATES[(index - 1) % CASE_NAME_TEMPLATES.length]} (${2018 + (index % 8)})`,
-        description: `${CASE_TYPE_TEMPLATES[(index - 1) % CASE_TYPE_TEMPLATES.length]} - Case file ${index} listed for procedural hearing and document compliance.`,
-        bucket: isBacklog ? 'backlog' : 'fresh',
-        priority: generatedPriority,
-        status: 'pending',
-        actionDate: ''
-    };
-}
-
 function createInitialState() {
-    const cases = [];
-
-    // Add all demo priority cases
-    DEMO_PRIORITY_CASES.forEach((priorityData, idx) => {
-        cases.push(createCase(idx + 1, true, priorityData));
-    });
-
-    // Add regular cases starting after priority cases
-    const startIndex = DEMO_PRIORITY_CASES.length + 1;
-    for (let i = startIndex; i <= TOTAL_CASES; i += 1) {
-        cases.push(createCase(i));
-    }
-
-    // Include all priority cases + 4 fresh cases (no backlog for demo)
-    const activeCasesCount = DEMO_PRIORITY_CASES.length + 4;
-    const activeCases = cases.slice(0, Math.min(activeCasesCount, cases.length));
-
     return {
-        cases,
-        activeCaseIds: activeCases.map((caseData) => caseData.id),
-        cursor: Math.min(activeCasesCount, cases.length)
+        cases: [],
+        activeCaseIds: [],
+        cursor: 0
     };
 }
 
@@ -189,25 +90,6 @@ function buildView(state, searchTerm = '') {
         : activeCases;
 
     const normalizedCases = filteredActiveCases.map((caseData) => ({ ...caseData }));
-    const hasUrgent = normalizedCases.some((caseData) => caseData.priority === 'urgent');
-    const hasHigh = normalizedCases.some((caseData) => caseData.priority === 'high');
-
-    if (!hasUrgent && normalizedCases.length > 0) {
-        normalizedCases[0].priority = 'urgent';
-    }
-
-    if (!hasHigh && normalizedCases.length > 1) {
-        normalizedCases[1].priority = 'high';
-    }
-
-    const hasMedium = normalizedCases.some((caseData) => caseData.priority === 'medium');
-    if (!hasMedium) {
-        const mediumCandidates = normalizedCases.filter((caseData) => caseData.priority === 'none');
-        const mediumSlots = Math.min(2, mediumCandidates.length);
-        for (let i = 0; i < mediumSlots; i += 1) {
-            mediumCandidates[i].priority = 'medium';
-        }
-    }
 
     const urgent = normalizedCases.filter((caseData) => caseData.priority === 'urgent');
     const high = normalizedCases.filter((caseData) => caseData.priority === 'high');
@@ -347,7 +229,7 @@ function updateBalanceMeter(backlogCount, freshCount) {
 function updateLoadButtonVisibility(allFinished) {
     const button = document.getElementById('loadNewCasesBtn');
     if (!button) return;
-    button.classList.toggle('hidden', !allFinished);
+    button.classList.add('hidden');
 }
 
 function renderCases(cases, containerId) {
@@ -400,6 +282,15 @@ async function apiUpdateCase(caseId, action, actionDate) {
 
     target.status = action;
     target.actionDate = actionDate;
+
+    const extraDetails = arguments[3] || {};
+    if (extraDetails.reason) {
+        target.actionReason = extraDetails.reason;
+    }
+    if (Array.isArray(extraDetails.documentNames) && extraDetails.documentNames.length > 0) {
+        target.actionDocuments = extraDetails.documentNames;
+    }
+
     state.activeCaseIds = state.activeCaseIds.filter((id) => id !== caseId);
     saveState(state);
 
@@ -408,38 +299,10 @@ async function apiUpdateCase(caseId, action, actionDate) {
 
 async function apiLoadNewCases() {
     const state = loadState();
-    const view = buildView(state);
-
-    if (!view.allFinished) {
-        return {
-            ok: true,
-            reason: 'Finish all current cases before loading new cases.',
-            view
-        };
-    }
-
-    if (state.cursor >= state.cases.length) {
-        const nextStart = state.cases.length + 1;
-        for (let i = 0; i < ACTIVE_BATCH_SIZE; i += 1) {
-            state.cases.push(createCase(nextStart + i));
-        }
-    }
-
-    const nextSlice = state.cases.slice(state.cursor, state.cursor + ACTIVE_BATCH_SIZE);
-    ensurePriorityCoverage(nextSlice);
-    state.activeCaseIds = nextSlice.map((caseData) => caseData.id);
-    state.cursor += nextSlice.length;
-
-    nextSlice.forEach((caseData) => {
-        caseData.status = 'pending';
-        caseData.actionDate = '';
-    });
-
-    saveState(state);
 
     return {
         ok: true,
-        reason: `${nextSlice.length} new cases loaded.`,
+        reason: 'Dashboard data is managed by backend sync. No local demo cases are loaded.',
         view: buildView(state)
     };
 }
@@ -484,7 +347,7 @@ function renderView(viewPayload) {
 
 async function fetchDashboardData(options = {}) {
     const {
-        autoLoadIfFinished = true,
+        autoLoadIfFinished = false,
         silent = false
     } = options;
 
@@ -528,6 +391,168 @@ function startDashboardAutoSync() {
     }, AUTO_SYNC_INTERVAL_MS);
 }
 
+function getActionLabel(action) {
+    if (action === 'reschedule') return 'Reschedule';
+    if (action === 'stay') return 'Stay';
+    if (action === 'adjoined') return 'Adjoined';
+    return 'Update';
+}
+
+function ensureCaseActionModal() {
+    if (caseActionModal) {
+        return caseActionModal;
+    }
+
+    const modal = document.createElement('div');
+    modal.className = 'judge-case-action-modal hidden';
+    modal.innerHTML = `
+        <div class="judge-case-action-modal__backdrop" data-role="close-modal"></div>
+        <div class="judge-case-action-modal__card" role="dialog" aria-modal="true" aria-label="Case action details">
+            <div class="judge-case-action-modal__header">
+                <h3 id="caseActionModalTitle">Case Action</h3>
+                <button type="button" class="judge-case-action-modal__close" data-role="close-modal">&times;</button>
+            </div>
+            <div class="judge-case-action-modal__body">
+                <p id="caseActionModalCase" class="judge-case-action-modal__case"></p>
+
+                <label class="judge-case-action-modal__label" for="caseActionDateInput">Action Date</label>
+                <input id="caseActionDateInput" class="judge-case-action-modal__input" type="date">
+
+                <label class="judge-case-action-modal__label" for="caseActionReasonInput">Reason</label>
+                <textarea id="caseActionReasonInput" class="judge-case-action-modal__input judge-case-action-modal__textarea" rows="4" placeholder="Enter reason for this action"></textarea>
+
+                <label class="judge-case-action-modal__label" for="caseActionDocumentInput">Upload Documents (Optional)</label>
+                <input id="caseActionDocumentInput" class="judge-case-action-modal__input" type="file" multiple accept=".pdf,.doc,.docx,.jpg,.jpeg,.png">
+
+                <div id="caseActionModalMessage" class="judge-case-action-modal__message"></div>
+            </div>
+            <div class="judge-case-action-modal__footer">
+                <button type="button" class="judge-case-action-modal__btn judge-case-action-modal__btn--secondary" data-role="close-modal">Cancel</button>
+                <button type="button" class="judge-case-action-modal__btn judge-case-action-modal__btn--primary" id="caseActionSubmitBtn">OK</button>
+            </div>
+        </div>
+    `;
+
+    document.body.appendChild(modal);
+
+    modal.addEventListener('click', (event) => {
+        const closeTarget = event.target.closest('[data-role="close-modal"]');
+        if (closeTarget) {
+            closeCaseActionModal();
+        }
+    });
+
+    const submitBtn = modal.querySelector('#caseActionSubmitBtn');
+    if (submitBtn) {
+        submitBtn.addEventListener('click', submitCaseActionFromModal);
+    }
+
+    caseActionModal = modal;
+    return modal;
+}
+
+function openCaseActionModal(actionContext) {
+    const modal = ensureCaseActionModal();
+    pendingCaseActionContext = actionContext;
+
+    const titleNode = modal.querySelector('#caseActionModalTitle');
+    const caseNode = modal.querySelector('#caseActionModalCase');
+    const dateInput = modal.querySelector('#caseActionDateInput');
+    const reasonInput = modal.querySelector('#caseActionReasonInput');
+    const docInput = modal.querySelector('#caseActionDocumentInput');
+    const messageNode = modal.querySelector('#caseActionModalMessage');
+
+    if (titleNode) {
+        titleNode.textContent = `${getActionLabel(actionContext.action)} Case`;
+    }
+    if (caseNode) {
+        caseNode.textContent = `Case: ${actionContext.caseId}`;
+    }
+    if (dateInput) {
+        dateInput.value = actionContext.actionDate || getTodayIsoDate();
+    }
+    if (reasonInput) {
+        reasonInput.value = '';
+    }
+    if (docInput) {
+        docInput.value = '';
+    }
+    if (messageNode) {
+        messageNode.textContent = '';
+    }
+
+    modal.classList.remove('hidden');
+}
+
+function closeCaseActionModal() {
+    if (!caseActionModal) return;
+    caseActionModal.classList.add('hidden');
+    pendingCaseActionContext = null;
+}
+
+async function submitCaseActionFromModal() {
+    if (!pendingCaseActionContext || !caseActionModal) {
+        return;
+    }
+
+    const actionContext = { ...pendingCaseActionContext };
+
+    const dateInput = caseActionModal.querySelector('#caseActionDateInput');
+    const reasonInput = caseActionModal.querySelector('#caseActionReasonInput');
+    const docInput = caseActionModal.querySelector('#caseActionDocumentInput');
+    const messageNode = caseActionModal.querySelector('#caseActionModalMessage');
+
+    const actionDate = dateInput && dateInput.value ? dateInput.value : getTodayIsoDate();
+    const reason = reasonInput ? reasonInput.value.trim() : '';
+
+    if (!reason) {
+        if (messageNode) {
+            messageNode.textContent = 'Please provide a reason before continuing.';
+        }
+        return;
+    }
+
+    const documentNames = docInput && docInput.files
+        ? Array.from(docInput.files).map((file) => file.name)
+        : [];
+
+    try {
+        const payload = await apiUpdateCase(
+            actionContext.caseId,
+            actionContext.action,
+            actionDate,
+            {
+                reason,
+                documentNames
+            }
+        );
+
+        renderView(payload);
+        closeCaseActionModal();
+
+        if (actionContext.action === 'adjoined') {
+            showActionMessage(`Case ${actionContext.caseId} adjoined and removed from the list.`);
+            return;
+        }
+
+        if (actionContext.action === 'reschedule') {
+            showActionMessage(`Case ${actionContext.caseId} rescheduled to ${actionDate}.`);
+            return;
+        }
+
+        if (actionContext.action === 'stay') {
+            showActionMessage(`Case ${actionContext.caseId} marked as stay.`);
+            return;
+        }
+
+        showActionMessage(`Case ${actionContext.caseId} updated successfully.`);
+    } catch (error) {
+        if (messageNode) {
+            messageNode.textContent = error.message;
+        }
+    }
+}
+
 async function handleCaseAction(event) {
     if (!isJudgeDashboard) return;
 
@@ -540,36 +565,13 @@ async function handleCaseAction(event) {
     const caseId = caseItem.getAttribute('data-case-id');
     const action = actionButton.getAttribute('data-action');
     const dateInput = caseItem.querySelector('.case-date-input');
-    const actionDate = dateInput ? dateInput.value : '';
+    const actionDate = dateInput ? dateInput.value : getTodayIsoDate();
 
-    if (!actionDate) {
-        showActionMessage('Please select a date before updating status.');
-        return;
-    }
-
-    try {
-        const payload = await apiUpdateCase(caseId, action, actionDate);
-        renderView(payload);
-
-        if (action === 'adjoined') {
-            showActionMessage(`Case ${caseId} completed and removed from the list.`);
-            return;
-        }
-
-        if (action === 'reschedule') {
-            showActionMessage(`Case ${caseId} rescheduled to ${actionDate}.`);
-            return;
-        }
-
-        if (action === 'stay') {
-            showActionMessage(`Case ${caseId} marked as Stay.`);
-            return;
-        }
-
-        showActionMessage(`Case ${caseId} action completed.`);
-    } catch (error) {
-        showActionMessage(error.message);
-    }
+    openCaseActionModal({
+        caseId,
+        action,
+        actionDate
+    });
 }
 
 async function handleLoadNewCases() {

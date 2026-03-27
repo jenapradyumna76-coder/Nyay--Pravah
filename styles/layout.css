@@ -116,22 +116,26 @@ main {
     width: 15rem;
     margin-left: 20px;
 }
-.main_tagline{
+
+.main_tagline {
 
     justify-content: center;
-    align-items: center ;
+    align-items: center;
     color: #CFB53B;
-   margin-left: 1rem;
+    margin-left: 1rem;
 }
-#prblack{
+
+#prblack {
     color: black;
-    
+
 }
-#pr_description{
+
+#pr_description {
     color: #CFB53B;
     font-size: 1.1rem;
     font-weight: 500;
 }
+
 #tagline {
     color: white;
     font-size: 1.2rem;
@@ -394,28 +398,29 @@ main {
     }
 
 
-@media (max-width: 480px) {
-    .hero-carousel {
-        height: 18rem;
+    @media (max-width: 480px) {
+        .hero-carousel {
+            height: 18rem;
+        }
+
+        .tagsection {
+            height: auto;
+            padding: 8px 10px;
+            flex-wrap: wrap;
+        }
+
+        #tag {
+            font-size: 0.9rem;
+            margin-left: 0;
+        }
+
+        #tagline {
+            font-size: 0.85rem;
+            margin-left: 0;
+            padding-left: 10px;
+        }
     }
 
-    .tagsection {
-        height: auto;
-        padding: 8px 10px;
-        flex-wrap: wrap;
-    }
-
-    #tag {
-        font-size: 0.9rem;
-        margin-left: 0;
-    }
-
-    #tagline {
-        font-size: 0.85rem;
-        margin-left: 0;
-        padding-left: 10px;
-    }
-}
     .top-row {
         flex-direction: column;
         justify-content: center;

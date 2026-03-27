@@ -722,6 +722,132 @@ body {
     transform: translateY(0);
 }
 
+.judge-case-action-modal {
+    position: fixed;
+    inset: 0;
+    z-index: 3100;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+}
+
+.judge-case-action-modal.hidden {
+    display: none;
+}
+
+.judge-case-action-modal__backdrop {
+    position: absolute;
+    inset: 0;
+    background: rgba(15, 23, 42, 0.55);
+}
+
+.judge-case-action-modal__card {
+    position: relative;
+    width: min(540px, 100%);
+    border-radius: 16px;
+    border: 1px solid #dbe7f7;
+    background: #ffffff;
+    box-shadow: 0 24px 44px rgba(15, 23, 42, 0.28);
+    overflow: hidden;
+}
+
+.judge-case-action-modal__header {
+    padding: 14px 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid #e7eef8;
+    background: linear-gradient(120deg, #eef4ff 0%, #f7fbff 100%);
+}
+
+.judge-case-action-modal__header h3 {
+    margin: 0;
+    color: #0f172a;
+    font-size: 1rem;
+}
+
+.judge-case-action-modal__close {
+    border: none;
+    background: transparent;
+    color: #334155;
+    font-size: 1.35rem;
+    line-height: 1;
+    cursor: pointer;
+}
+
+.judge-case-action-modal__body {
+    padding: 14px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.judge-case-action-modal__case {
+    margin: 0 0 4px;
+    color: #334155;
+    font-size: 0.84rem;
+    font-weight: 700;
+}
+
+.judge-case-action-modal__label {
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: #334155;
+}
+
+.judge-case-action-modal__input {
+    width: 100%;
+    border: 1px solid #cfdced;
+    border-radius: 10px;
+    padding: 9px 10px;
+    font-size: 0.9rem;
+    color: #0f172a;
+    background: #f8fbff;
+}
+
+.judge-case-action-modal__textarea {
+    min-height: 96px;
+    resize: vertical;
+}
+
+.judge-case-action-modal__message {
+    min-height: 18px;
+    color: #b91c1c;
+    font-size: 0.78rem;
+    font-weight: 700;
+}
+
+.judge-case-action-modal__footer {
+    padding: 12px 16px 16px;
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+}
+
+.judge-case-action-modal__btn {
+    border: none;
+    border-radius: 10px;
+    padding: 8px 12px;
+    font-size: 0.82rem;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.judge-case-action-modal__btn--secondary {
+    background: #e5e7eb;
+    color: #1f2937;
+}
+
+.judge-case-action-modal__btn--primary {
+    background: #2563eb;
+    color: #ffffff;
+}
+
+.judge-case-action-modal__btn--primary:hover {
+    background: #1d4ed8;
+}
+
 .btn-stay {
     background: var(--danger-light);
     color: #7f1d1d;

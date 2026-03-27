@@ -2,15 +2,14 @@ let pendingCases = [];
 let filteredCases = [];
 let currentCaseId = null;
 
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     loadPendingCases();
     setupEventListeners();
 });
 
 async function loadPendingCases() {
-    // Show top pending cases immediately instead of loading spinner
-    pendingCases = getStaticPendingCases();
-    filteredCases = [...pendingCases];
+    pendingCases = [];
+    filteredCases = [];
     renderCases();
 
     // Try to fetch from API in background for updates
@@ -39,17 +38,11 @@ async function loadPendingCases() {
             }
         }
     } catch (error) {
-        // Keep static data if API fails
-        console.log('Using static data - API unavailable');
+        console.error('Unable to load all cases from backend:', error.message);
+        pendingCases = [];
+        filteredCases = [];
+        renderCases();
     }
-}
-
-function getStaticPendingCases() {
-    return [
-        { id: 'CS-2024-089', type:'civil', title:'Property Dispute - Land Ownership', plaintiff:'Rajesh Kumar vs State Bank of India', defendant:'Mohan Lal & Others', time:'10:00 AM', priority:'high', status:'pending', courtRoom:'Courtroom 04', judge:'Honorable Judge Harshita Sharma', description:'Dispute over ancestral property ownership and land records', lastHearing:'2024-03-15', nextHearing:'2024-03-23', documents:['Property Deed','Land Records','Witness Statements'], notes:'Complex case requiring detailed examination of land records' },
-        { id: 'FD-2024-045', type:'family', title:'Divorce Petition with Child Custody', plaintiff:'Priya Sharma', defendant:'Amit Sharma', time:'11:30 AM', priority:'urgent', status:'in-progress', courtRoom:'Courtroom 04', judge:'Honorable Judge Harshita Sharma', description:'Contested divorce with issues of child custody and alimony', lastHearing:'2024-03-20', nextHearing:'2024-03-23', documents:['Marriage Certificate','Birth Certificate','Financial Statements'], notes:'Mediation attempted but unsuccessful. Child welfare officer report pending.' },
-        { id: 'FD-2024-078', type:'family', title:'Maintenance and Alimony Case', plaintiff:'Sunita Devi', defendant:'Rajendra Prasad', time:'10:00 AM', priority:'urgent', status:'postponed', courtRoom:'Courtroom 04', judge:'Honorable Judge Harshita Sharma', description:'Claim for maintenance and alimony under Hindu Marriage Act', lastHearing:'2024-03-20', nextHearing:'2024-03-30', documents:['Marriage Certificate','Income Proof','Medical Reports'], notes:'Postponed due to defendant\'s medical emergency. Next date fixed for final arguments.' }
-    ];
 }
 
 function renderCases() {
@@ -160,7 +153,7 @@ async function submitStatusUpdate() {
     if (!newStatus) return;
 
     try {
-        const res = await fetch(`/api/cases/${currentCaseId}`, { method: 'PUT', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ status:newStatus, notes }) });
+        const res = await fetch(`/api/cases/${currentCaseId}`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ status: newStatus, notes }) });
         if (res.ok) {
             const caseItem = pendingCases.find(c => c.id === currentCaseId);
             if (caseItem) { caseItem.status = newStatus; if (notes) caseItem.notes = notes; }
@@ -198,15 +191,15 @@ function setupEventListeners() {
     };
 }
 
-function getStatusClass(status){
-    return { pending:'pending', 'in-progress':'in-progress', completed:'completed', postponed:'postponed'}[status] || 'pending';
+function getStatusClass(status) {
+    return { pending: 'pending', 'in-progress': 'in-progress', completed: 'completed', postponed: 'postponed' }[status] || 'pending';
 }
-function getStatusLabel(status){
-    return { pending:'Pending', 'in-progress':'In Progress', completed:'Completed', postponed:'Postponed'}[status] || 'Pending';
+function getStatusLabel(status) {
+    return { pending: 'Pending', 'in-progress': 'In Progress', completed: 'Completed', postponed: 'Postponed' }[status] || 'Pending';
 }
-function getPriorityClass(p){return {urgent:'urgent',high:'high',medium:'medium',low:'low'}[p]||'medium';}
-function getTypeLabel(t){return {civil:'Civil',criminal:'Criminal',family:'Family',property:'Property',commercial:'Commercial'}[t]||'Civil';}
-function formatDate(d){ if (!d || d==='Disposed') return d; const date=new Date(d); return date.toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric'}); }
+function getPriorityClass(p) { return { urgent: 'urgent', high: 'high', medium: 'medium', low: 'low' }[p] || 'medium'; }
+function getTypeLabel(t) { return { civil: 'Civil', criminal: 'Criminal', family: 'Family', property: 'Property', commercial: 'Commercial' }[t] || 'Civil'; }
+function formatDate(d) { if (!d || d === 'Disposed') return d; const date = new Date(d); return date.toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }); }
 
 function showLoading() {
     document.getElementById('loading-spinner').style.display = 'block';

@@ -64,7 +64,7 @@
                         <i class="fas fa-clock"></i>
                     </div>
                     <div class="stat-info">
-                        <span class="stat-value" id="pendingRequests">12</span>
+                        <span class="stat-value" id="pendingRequests">0</span>
                         <span class="stat-label">Pending</span>
                     </div>
                 </div>
@@ -73,7 +73,7 @@
                         <i class="fas fa-check-circle"></i>
                     </div>
                     <div class="stat-info">
-                        <span class="stat-value" id="approvedRequests">28</span>
+                        <span class="stat-value" id="approvedRequests">0</span>
                         <span class="stat-label">Approved</span>
                     </div>
                 </div>
@@ -82,7 +82,7 @@
                         <i class="fas fa-times-circle"></i>
                     </div>
                     <div class="stat-info">
-                        <span class="stat-value" id="rejectedRequests">3</span>
+                        <span class="stat-value" id="rejectedRequests">0</span>
                         <span class="stat-label">Rejected</span>
                     </div>
                 </div>
@@ -91,7 +91,7 @@
                         <i class="fas fa-spinner"></i>
                     </div>
                     <div class="stat-info">
-                        <span class="stat-value" id="processingRequests">7</span>
+                        <span class="stat-value" id="processingRequests">0</span>
                         <span class="stat-label">Processing</span>
                     </div>
                 </div>
@@ -136,7 +136,7 @@
             <section class="requests-list">
                 <div class="requests-header">
                     <h3>Your Manual Requests</h3>
-                    <span class="requests-count" id="totalRequests">50 total requests</span>
+                    <span class="requests-count" id="totalRequests">0 total requests</span>
                 </div>
 
                 <div class="requests-table-container">
@@ -164,7 +164,7 @@
                         <i class="fas fa-chevron-left"></i> Previous
                     </button>
                     <span class="page-info">
-                        Page <span id="currentPage">1</span> of <span id="totalPages">5</span>
+                        Page <span id="currentPage">1</span> of <span id="totalPages">1</span>
                     </span>
                     <button class="btn btn-secondary" id="nextPage" onclick="changePage(1)">
                         Next <i class="fas fa-chevron-right"></i>
@@ -367,6 +367,7 @@
             });
         }
     </script>
+    <script src="../scripts/ui-mode.js"></script>
 </body>
 
 </html>

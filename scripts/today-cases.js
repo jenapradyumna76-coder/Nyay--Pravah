@@ -4,7 +4,7 @@ let filteredCases = [];
 let currentCaseId = null;
 
 // Initialize page
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     initializePage();
 });
 
@@ -29,124 +29,17 @@ async function loadTodayCases() {
             const data = await response.json();
             todayCases = data.cases || [];
         } else {
-            throw new Error('Backend not available');
+            todayCases = [];
         }
     } catch (error) {
-        console.log('Using static data:', error.message);
-        todayCases = getStaticTodayCases();
+        console.error('Unable to load today cases from backend:', error.message);
+        todayCases = [];
     }
 
     filteredCases = [...todayCases];
     renderCases();
     updateSummaryCards();
     hideLoading();
-}
-
-function getStaticTodayCases() {
-    return [
-        {
-            id: "CS-2024-089",
-            type: "civil",
-            title: "Property Dispute - Land Ownership",
-            plaintiff: "Rajesh Kumar vs State Bank of India",
-            defendant: "Mohan Lal & Others",
-            time: "10:00 AM",
-            priority: "high",
-            status: "pending",
-            courtRoom: "Courtroom 04",
-            judge: "Honorable Judge Harshita Sharma",
-            description: "Dispute over ancestral property ownership and land records",
-            lastHearing: "2024-03-15",
-            nextHearing: "2024-03-23",
-            documents: ["Property Deed", "Land Records", "Witness Statements"],
-            notes: "Complex case requiring detailed examination of land records"
-        },
-        {
-            id: "FD-2024-045",
-            type: "family",
-            title: "Divorce Petition with Child Custody",
-            plaintiff: "Priya Sharma",
-            defendant: "Amit Sharma",
-            time: "11:30 AM",
-            priority: "urgent",
-            status: "in-progress",
-            courtRoom: "Courtroom 04",
-            judge: "Honorable Judge Harshita Sharma",
-            description: "Contested divorce with issues of child custody and alimony",
-            lastHearing: "2024-03-20",
-            nextHearing: "2024-03-23",
-            documents: ["Marriage Certificate", "Birth Certificate", "Financial Statements"],
-            notes: "Mediation attempted but unsuccessful. Child welfare officer report pending."
-        },
-        {
-            id: "CR-2024-112",
-            type: "criminal",
-            title: "Fraud and Cheating Case",
-            plaintiff: "State vs Ramesh Gupta",
-            defendant: "Ramesh Gupta",
-            time: "2:00 PM",
-            priority: "high",
-            status: "pending",
-            courtRoom: "Courtroom 04",
-            judge: "Honorable Judge Harshita Sharma",
-            description: "Allegations of financial fraud and cheating amounting to ₹5 lakhs",
-            lastHearing: "2024-03-18",
-            nextHearing: "2024-03-23",
-            documents: ["FIR Copy", "Bank Statements", "Witness Depositions"],
-            notes: "Accused out on bail. Forensic audit report expected."
-        },
-        {
-            id: "PC-2024-067",
-            type: "property",
-            title: "Commercial Property Lease Dispute",
-            plaintiff: "ABC Corporation Ltd",
-            defendant: "XYZ Properties Pvt Ltd",
-            time: "3:30 PM",
-            priority: "medium",
-            status: "pending",
-            courtRoom: "Courtroom 04",
-            judge: "Honorable Judge Harshita Sharma",
-            description: "Breach of commercial lease agreement and rent arrears",
-            lastHearing: "2024-03-10",
-            nextHearing: "2024-03-23",
-            documents: ["Lease Agreement", "Payment Records", "Notice Letters"],
-            notes: "Parties attempting settlement through mediation."
-        },
-        {
-            id: "CS-2024-134",
-            type: "civil",
-            title: "Contract Breach - Service Agreement",
-            plaintiff: "Tech Solutions Inc",
-            defendant: "Global Services Ltd",
-            time: "4:45 PM",
-            priority: "medium",
-            status: "completed",
-            courtRoom: "Courtroom 04",
-            judge: "Honorable Judge Harshita Sharma",
-            description: "Breach of IT service contract and compensation claim",
-            lastHearing: "2024-03-23",
-            nextHearing: "Disposed",
-            documents: ["Service Contract", "Performance Reports", "Settlement Agreement"],
-            notes: "Case disposed with mutual settlement agreement."
-        },
-        {
-            id: "FD-2024-078",
-            type: "family",
-            title: "Maintenance and Alimony Case",
-            plaintiff: "Sunita Devi",
-            defendant: "Rajendra Prasad",
-            time: "10:00 AM",
-            priority: "urgent",
-            status: "postponed",
-            courtRoom: "Courtroom 04",
-            judge: "Honorable Judge Harshita Sharma",
-            description: "Claim for maintenance and alimony under Hindu Marriage Act",
-            lastHearing: "2024-03-20",
-            nextHearing: "2024-03-30",
-            documents: ["Marriage Certificate", "Income Proof", "Medical Reports"],
-            notes: "Postponed due to defendant's medical emergency. Next date fixed for final arguments."
-        }
-    ];
 }
 
 function renderCases() {
@@ -401,7 +294,7 @@ function refreshCases() {
 
 function setupEventListeners() {
     // Close modals when clicking outside
-    window.onclick = function(event) {
+    window.onclick = function (event) {
         const caseModal = document.getElementById('case-modal');
         const statusModal = document.getElementById('status-modal');
 
